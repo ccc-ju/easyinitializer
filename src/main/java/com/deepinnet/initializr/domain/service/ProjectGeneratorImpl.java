@@ -96,11 +96,14 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
     @Resource
     private GenerationApiPackageInfo generationApiPackageInfo;
 
+    @Resource
+    private GenerationKnife4jConfiguration generationKnife4jConfiguration;
+
     @Override
     public void generator(ProjectInfo projectInfo) throws Exception {
 
         URL resource = this.getClass().getResource("/");
-        String projectName = "espjiaju";
+        String projectName = projectInfo.getName();
         String projectsRoot = resource.getFile() + "/" + projectName + "/";
         // 父工程 生成 .gitignore
         generationIgnore.doGeneration(projectInfo, projectsRoot);
@@ -146,6 +149,9 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
 
         // 3. 创建  Application.java
         generationApplication.doGeneration(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
+
+        // 4.生成knife4j配置类
+        generationKnife4jConfiguration.doGeneration(projectInfo, projectsRoot);
     }
 
     private void generatorBiz(ProjectInfo projectInfo, String projectName, String projectsRoot) throws Exception {
