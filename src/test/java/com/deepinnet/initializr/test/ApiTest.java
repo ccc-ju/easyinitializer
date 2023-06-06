@@ -30,7 +30,7 @@ public class ApiTest {
                 "com.deepinnet.espjiaju",
                 "espjiaju",
                 "1.0.0-SNAPSHOT",
-                "espjiaju-core",
+                "espjiaju",
                 "Demo project for Spring Boot"
         );
 

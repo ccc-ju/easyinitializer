@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文件下载</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<h1>项目生成工具</h1>
+
+<form id="downloadForm">
+    <label for="groupId">坐标：</label>
+    <input type="text" id="groupId" required><br>
+
+    <label for="projectName">项目名：</label>
+    <input type="text" id="projectName" required><br>
+
+    <label for="version">版本：</label>
+    <input type="text" id="version"><br>
+
+    <label for="description">描述：</label>
+    <textarea id="description"></textarea><br>
+
+    <input type="submit" value="下载">
+</form>
+
+<script>
+    const re = /^([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)$/;
+    let positionIpt = document.getElementById("groupId");
+    let positionIptProjectName = document.getElementById("projectName");
+
+    positionIpt.oninput = function () {
+        let value = positionIpt.value;
+
+        let name = value.substring(value.lastIndexOf(".") + 1, value.length);
+
+        console.log(name);
+
+        positionIptProjectName.value = name;
+
+    }
+
+    positionIpt.onblur = function () {
+        let groupId = document.getElementById("groupId").value;
+        if (!re.test(groupId)) {
+            alert("请输入正确格式的坐标");
+        } else {
+            document.getElementById("downloadForm").addEventListener("submit", function(event) {
+                event.preventDefault(); // 阻止表单的默认提交行为
+
+                // 获取输入框的值
+                let groupId = document.getElementById("groupId").value;
+                let projectName = document.getElementById("projectName").value;
+                let version = document.getElementById("version").value;
+                let description = document.getElementById("description").value;
+
+                // 进行必要性校验
+                if (!groupId || !projectName) {
+                    alert("坐标或项目名不能为空");
+                    return;
+                }
+
+                // 构建请求参数
+                var data = {
+                    groupId: groupId,
+                    projectName: projectName,
+                    version: version,
+                    description: description
+                };
+
+                // 发送POST请求
+                axios.post("http://127.0.0.1:8081/project/initGenerate", data)
+                    .then(function(response) {
+                        // 处理响应，例如下载文件
+                        console.log("文件下载成功");
+                    })
+                    .catch(function(error) {
+                        // 处理错误
+                        console.log("文件下载失败", error);
+                    });
+            });
+        }
+    }
+</script>
+</body>
+</html>
