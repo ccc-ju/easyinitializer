@@ -36,7 +36,7 @@ public class GenerationApplication extends BaseModule {
         logger.info("创建主入口类 Application.java {}", file.getPath());
 
         File knife4JConfigurationFile = new File(projectsRoot + "/src/main/java/" + packagePath + "/config",
-                applicationInfo.getClassName() + ".java");
+                "Knife4jConfiguration.java");
 
         // 写入文件
         super.writeFile(knife4JConfigurationFile, "knife4j-configuration.ftl", applicationInfo);
