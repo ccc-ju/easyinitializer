@@ -1,4 +1,4 @@
-# EasyRiggerInitializr | SpringBoot 脚手架，简化项目构建
+# EasyInitializr | SpringBoot 脚手架，简化项目构建
 
 > **作者：** juju
 
