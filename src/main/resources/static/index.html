@@ -1,86 +1,310 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>文件下载</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目生成工具</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: calc(100%);
+            /*background: url(./bg.jpg);*/
+            /*background-repeat: no-repeat;*/
+            /*background-size: 100% 100%;*/
+        }
+
+        .form-box {
+            width: 500px;
+            margin: 0 auto;
+            padding-top: 100px;
+        }
+
+        .form-title {
+            text-align: center;
+        }
+
+        .form-item {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            flex: 70px 0 0;
+        }
+
+        label::after {
+            content: "：";
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        input.text-input,
+        textarea.text-input {
+            display: block;
+            padding: 0 10px;
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 40px;
+            outline: none;
+            caret-color: #3aaff3;
+            /*光标颜色*/
+            transition: all 300ms;
+            border-left-width: 5px;
+        }
+
+        input.text-input:valid {
+            border-color: #66c8f3;
+        }
+
+        input.text-input:invalid {
+            border-color: #66c8f3;
+        }
+
+        input.text-input:focus {
+            border-color: #7575ef;
+        }
+
+        textarea.text-input:valid {
+            height: 90px;
+            padding-top: 10px;
+            border-color: #66c8f3;
+        }
+
+        textarea.text-input:focus {
+            border-color: #7575ef;
+        }
+
+        button {
+            width: 48%;
+            height: 40px;
+            padding: 0;
+            margin: 0;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            background: #66c8f3;
+            color: #fff;
+        }
+
+        button::before {
+            --size: 0;
+            position: absolute;
+            left: var(--x);
+            top: var(--y);
+            width: var(--size);
+            height: var(--size);
+            background-image: radial-gradient(circle closest-side, #66c8f3, transparent);
+            content: "";
+            transform: translate3d(-50%, -50%, 0);
+            transition: width 200ms ease, height 200ms ease;
+        }
+
+
+        button:hover::before {
+            --size: 400px;
+        }
+
+        button {
+            margin-right: 4%;
+        }
+
+        button {
+            width: 48%;
+            height: 40px;
+            padding: 0;
+            margin: 0;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: #6ec2f7;
+            color: #fff;
+            -moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+
+        button:hover {
+            background-position: 100% 0;
+            -moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        button {
+            background-image: linear-gradient(to right, #7ad0f5, #b29cf6);
+            /* box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75); */
+        }
+
+        span {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .form-download {
+            top: 30px;
+            margin: 0 auto;
+        }
+
+        #spanId,
+        #spanName {
+            margin-left: 90px;
+        }
+    </style>
 </head>
+
 <body>
-<h1>项目生成工具</h1>
+    <form class="form-box" id="form" onsubmit=onDownload(event)>
+        <h1 class="form-title">项目生成工具</h1>
+        <div class="form-item">
+            <label>坐标</label>
+            <input type="text" id="groupId" class="text-input" placeholder="com.deepinnet.xxx" oninput="setCustomValidity('')"
+                oninvalid="setCustomValidity('请输入坐标')" onblur="checkGroupId()" required>
+        </div><span id="spanId"></span>
+        <div class="form-item">
+            <label>名称</label>
+            <input type="text" id="projectName" class="text-input" placeholder="请输入项目名" oninput="setCustomValidity('')"
+                oninvalid="setCustomValidity('请输入项目名')" onblur="checkProjectName()" required>
+        </div><span id="spanName"></span>
+        <div class="form-item">
+            <label>版本</label>
+            <input type="text" id="version" class="text-input" placeholder="请输入版本">
+        </div><span id="spanName"></span>
+        <div class="form-item">
+            <label>描述</label>
+            <textarea type="textarea" id="description" rows="5" class="text-input" placeholder="请输入描述"></textarea>
+        </div>
+        <span id="spanName"></span>
+        <div class="form-item">
+            <button class="form-download" type="submit" value="下 载" onclick="onDownload(event); return false;" onmousemove="move(event)">
+                <span>下 载</span>
+            </button>
+        </div>
+    </form>
 
-<form id="downloadForm">
-    <label for="groupId">坐标：</label>
-    <input type="text" id="groupId" required><br>
-
-    <label for="projectName">项目名：</label>
-    <input type="text" id="projectName" required><br>
-
-    <label for="version">版本：</label>
-    <input type="text" id="version"><br>
-
-    <label for="description">描述：</label>
-    <textarea id="description"></textarea><br>
-
-    <input type="submit" value="下载">
-</form>
-
+</body>
 <script>
-    const re = /^([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)$/;
-    let positionIpt = document.getElementById("groupId");
-    let positionIptProjectName = document.getElementById("projectName");
 
+    const positionIpt = document.getElementById('groupId');
+    const positionIptProjectName = document.getElementById('projectName');
+    // 截取字符串
     positionIpt.oninput = function () {
         let value = positionIpt.value;
-
-        let name = value.substring(value.lastIndexOf(".") + 1, value.length);
-
-        console.log(name);
-
-        positionIptProjectName.value = name;
-
+        positionIptProjectName.value = value.substring(value.lastIndexOf('.') + 1, value.length);
+    }
+    // 校验坐标
+    function checkGroupId() {
+        const reg = /^([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)$/;
+        var positionIpt = document.getElementById('groupId');
+        var spanId = document.getElementById('spanId')
+        if (positionIpt.value === '' || positionIpt.value === null) {
+            spanId.innerHTML = '请输入坐标'.fontcolor('#7575ef');
+            return false;
+        }
+        if (!reg.test(positionIpt.value)) {
+            spanId.innerHTML = '请输入正确的坐标'.fontcolor("#7575ef");
+            return false;
+        }
+        spanId.innerHTML = '';
+        return true;
+    }
+    // 校验项目名
+    function checkProjectName() {
+        var positionIptProjectName = document.getElementById('projectName');
+        var spanName = document.getElementById('spanName')
+        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+            spanName.innerHTML = '请输入项目名'.fontcolor("#7575ef");
+            return false;
+        }
+        spanName.innerHTML = '';
+        return true;
     }
 
-    positionIpt.onblur = function () {
-        let groupId = document.getElementById("groupId").value;
-        if (!re.test(groupId)) {
-            alert("请输入正确格式的坐标");
-        } else {
-            document.getElementById("downloadForm").addEventListener("submit", function(event) {
-                event.preventDefault(); // 阻止表单的默认提交行为
+    // 验证表单数据
+    function onDownload() {
+        let groupIdCheck = checkGroupId();
+        let projectNameCheck = checkProjectName();
 
-                // 获取输入框的值
-                let groupId = document.getElementById("groupId").value;
-                let projectName = document.getElementById("projectName").value;
-                let version = document.getElementById("version").value;
-                let description = document.getElementById("description").value;
-
-                // 进行必要性校验
-                if (!groupId || !projectName) {
-                    alert("坐标或项目名不能为空");
-                    return;
-                }
-
-                // 构建请求参数
-                var data = {
-                    groupId: groupId,
-                    projectName: projectName,
-                    version: version,
-                    description: description
-                };
-
-                // 发送POST请求
-                axios.post("http://127.0.0.1:8081/project/initGenerate", data)
-                    .then(function(response) {
-                        // 处理响应，例如下载文件
-                        console.log("文件下载成功");
-                    })
-                    .catch(function(error) {
-                        // 处理错误
-                        console.log("文件下载失败", error);
-                    });
-            });
+        if (!groupIdCheck || !projectNameCheck) {
+            return false;
         }
+
+        // 获取输入框的值
+        const groupId = document.getElementById('groupId').value;
+        const projectName = document.getElementById('projectName').value;
+        const version = document.getElementById('version').value;
+        const description = document.getElementById('description').value;
+
+        // 构建请求参数
+        const data = {
+            groupId: groupId,
+            projectName: projectName,
+            version: version,
+            description: description
+        };
+
+        axios.defaults.timeout = 300000;
+        // 发送POST请求
+        axios.post('http://127.0.0.1:8081/project/initGenerate', data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                responseType: 'arraybuffer'
+            })
+            .then(function (response) {
+                let textDecoder = new TextDecoder();
+                let decodeResult = textDecoder.decode(response.data);
+                try{
+                    let parseJson = JSON.parse(decodeResult);
+                    console.log(parseJson);
+                } catch (error) {
+                    // 处理响应，例如下载文件
+                    console.log(response.data);
+                    const blob = new Blob([response.data], {type: 'application/zip'});
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', data.projectName + '.zip'); // 文件名可以根据实际情况修改
+                    document.body.appendChild(link);
+                    link.click();
+                    console.log('文件下载成功');
+                }
+            })
+            .catch(function (error) {
+                // 处理错误
+                console.log('文件下载失败', error);
+            });
+    }
+    // 下载按钮鼠标移入效果
+    function move(e) {
+        const x = e.pageX - e.target.offsetLeft;
+        const y = e.pageY - e.target.offsetTop;
+        e.target.style.setProperty('--x', `${x}px`);
+        e.target.style.setProperty('--y', `${y}px`);
     }
 </script>
-</body>
+
 </html>

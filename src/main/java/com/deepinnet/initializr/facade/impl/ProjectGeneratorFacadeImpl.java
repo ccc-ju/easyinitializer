@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
 
-    private Logger logger = LoggerFactory.getLogger(ProjectGeneratorFacadeImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ProjectGeneratorFacadeImpl.class);
 
     private final IProjectGenerator iProjectGenerator;
 

@@ -1,6 +1,7 @@
 package com.deepinnet.initializr.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -13,7 +14,8 @@ import java.io.Serializable;
  * @since 2023/6/6
  */
 
-@Data
+@Getter
+@Setter
 public class ProjectInitDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;

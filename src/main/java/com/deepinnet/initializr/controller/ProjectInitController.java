@@ -3,10 +3,7 @@ package com.deepinnet.initializr.controller;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
 import com.deepinnet.initializr.facade.ProjectGeneratorFacade;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  * @since 2023/6/6
  */
 
+@CrossOrigin
 @RestController
 @RequestMapping("/project")
 @RequiredArgsConstructor
