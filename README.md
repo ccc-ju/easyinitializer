@@ -320,3 +320,9 @@ public void test_IProjectGenerator() throws Exception {
 - 脚手架把创建出来的工程生成到 test-classes 下，这个路径也可以配置到其他路径里。
 - 有了新生成的工程就可以通过 IDEA 打开了，与我们手动创建的工程是一样的。
 
+**网页访问**
+
+运行项目，打开 http:127.0.0.1:8081/index.html
+输入项目信息，点击 '下载' 按钮，即可下载已经生成的项目zip文件
+注：项目中为了防止信息泄漏，模板中未定义redis / mysql数据库 连接及密码
+
