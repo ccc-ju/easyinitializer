@@ -16,7 +16,7 @@ import java.io.File;
 @Service
 public class GenerationCommonDalInfo extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationCommonDalInfo.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationCommonDalInfo.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot) throws Exception {
 

@@ -14,7 +14,7 @@ import java.io.File;
 @Service
 public class GenerationBizServiceImplPom extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationBizServiceImplPom.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationBizServiceImplPom.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot) throws Exception {
         File file = new File(

@@ -16,7 +16,7 @@ import java.io.File;
 @Service
 public class GenerationTest extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationTest.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationTest.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot, String lastPackageName, StringBuffer applicationJavaName) throws Exception {
         ApplicationInfo applicationInfo = new ApplicationInfo(

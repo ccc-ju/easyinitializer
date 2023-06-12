@@ -200,7 +200,7 @@ server:
 @Service
 public class GenerationApplication extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationApplication.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationApplication.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot, String lastPackageName, StringBuffer applicationJavaName) throws Exception {
 
@@ -234,7 +234,7 @@ public class GenerationApplication extends BaseModule {
 @Service
 public class ProjectGeneratorImpl implements IProjectGenerator {
 
-    private Logger logger = LoggerFactory.getLogger(ProjectGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ProjectGeneratorImpl.class);
 
     @Resource
     private GenerationApplication generationApplication;

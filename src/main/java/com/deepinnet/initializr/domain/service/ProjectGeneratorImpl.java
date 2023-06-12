@@ -19,7 +19,7 @@ import java.net.URL;
 @Service
 public class ProjectGeneratorImpl implements IProjectGenerator {
 
-    private Logger logger = LoggerFactory.getLogger(ProjectGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ProjectGeneratorImpl.class);
 
     @Resource
     private GenerationApplication generationApplication;

@@ -19,7 +19,7 @@ import java.io.File;
 @Service
 public class GenerationPackageInfo extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationPackageInfo.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationPackageInfo.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot, String lastPackageName, StringBuffer applicationJavaName) throws Exception {
 

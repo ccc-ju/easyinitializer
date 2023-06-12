@@ -16,7 +16,7 @@ import java.io.File;
 @Service
 public class GenerationCommonUtilInfo extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationCommonUtilInfo.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationCommonUtilInfo.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot) throws Exception {
 

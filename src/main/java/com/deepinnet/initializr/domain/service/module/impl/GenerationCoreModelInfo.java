@@ -16,7 +16,7 @@ import java.io.File;
 @Service
 public class GenerationCoreModelInfo extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationCoreModelInfo.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationCoreModelInfo.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot) throws Exception {
 

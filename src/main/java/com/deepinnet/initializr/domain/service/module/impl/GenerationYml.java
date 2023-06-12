@@ -14,7 +14,7 @@ import java.io.File;
 @Service
 public class GenerationYml extends BaseModule {
 
-    private Logger logger = LoggerFactory.getLogger(GenerationYml.class);
+    private final Logger logger = LoggerFactory.getLogger(GenerationYml.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot) throws Exception {
 

@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 @SpringBootTest
 public class ApiTest {
 
-    private Logger log = LoggerFactory.getLogger(ApiTest.class);
+    private final Logger log = LoggerFactory.getLogger(ApiTest.class);
 
     @Resource
     private IProjectGenerator iProjectGenerator;
