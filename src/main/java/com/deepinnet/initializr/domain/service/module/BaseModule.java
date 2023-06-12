@@ -5,17 +5,18 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 
 /**
  * @author chenjiaju
  * @since 2023/6/5
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class BaseModule {
 
-    private static String ENCODING = "UTF-8";
+    private final static String ENCODING = "UTF-8";
 
     private static Configuration cfg;
 
@@ -41,7 +42,7 @@ public class BaseModule {
             }
             file.createNewFile();
         }
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(file.toPath()));
         try {
             getTemplate(ftl).process(dataModel, outputStreamWriter);
         } finally {
