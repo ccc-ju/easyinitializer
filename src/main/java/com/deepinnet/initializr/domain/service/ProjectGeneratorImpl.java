@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.net.URL;
 
 /**
  * 项目结构生成
@@ -102,9 +101,10 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
     @Override
     public void generator(ProjectInfo projectInfo) throws Exception {
 
-        URL resource = this.getClass().getResource("/");
+        // URL resource = this.getClass().getResource("/");
+        String property = System.getProperty("user.dir");
         String projectName = projectInfo.getName();
-        String projectsRoot = resource.getFile() + "/" + projectName + "/";
+        String projectsRoot = property + "/" + projectName + "/";
         // 父工程 生成 .gitignore
         generationIgnore.doGeneration(projectInfo, projectsRoot);
         // 父工程 生成 README.ftl

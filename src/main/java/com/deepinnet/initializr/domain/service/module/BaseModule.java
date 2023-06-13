@@ -1,13 +1,22 @@
 package com.deepinnet.initializr.domain.service.module;
 
+import cn.hutool.core.util.CharsetUtil;
+import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.springframework.core.io.ResourceLoader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * @author chenjiaju
@@ -21,18 +30,61 @@ public class BaseModule {
     private static Configuration cfg;
 
     static {
-        try {
-            cfg = new Configuration(Configuration.VERSION_2_3_23);
-            File file = new File(System.getProperty("user.dir") + "/src/main/resources/generator");
-            cfg.setDirectoryForTemplateLoading(file);
-            cfg.setDefaultEncoding("UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
+        String resourcePath = "generator";
+        URL resourceUrl = ResourceLoader.class.getClassLoader().getResource(resourcePath);
+        // 非jar包方式载入
+        if (resourceUrl != null && resourceUrl.getProtocol().equals("file")) {
+            try {
+                File resourceDir = Paths.get(resourceUrl.toURI()).toFile();
+                cfg = new Configuration(Configuration.VERSION_2_3_23);
+                cfg.setDirectoryForTemplateLoading(resourceDir);
+                cfg.setDefaultEncoding(CharsetUtil.UTF_8);
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // jar包方式载入
+        if (resourceUrl != null && resourceUrl.getProtocol().equals("jar")) {
+            try {
+                JarURLConnection jarConnection = (JarURLConnection) resourceUrl.openConnection();
+                JarFile jarFile = jarConnection.getJarFile();
+                Enumeration<JarEntry> entries = jarFile.entries();
+
+                cfg = new Configuration(Configuration.VERSION_2_3_23);
+                StringTemplateLoader stringTemplateLoader = new StringTemplateLoader();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    if (!entry.isDirectory() && entry.getName().startsWith("generator/") && entry.getName().endsWith(".ftl")) {
+                        try (InputStream inputStream = jarFile.getInputStream(entry);
+                             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+                            String templateContent = readInputStream(inputStreamReader);
+                            String templateName = entry.getName().replace("generator/", "");
+                            stringTemplateLoader.putTemplate(templateName, templateContent);
+                        }
+                    }
+                }
+                cfg.setTemplateLoader(stringTemplateLoader);
+                cfg.setDefaultEncoding("UTF-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static String readInputStream(InputStreamReader reader) throws IOException {
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator());
+            }
+            return content.toString();
         }
     }
 
     protected Template getTemplate(String ftl) throws IOException {
-        return cfg.getTemplate(ftl, ENCODING);
+        return cfg.getTemplate(ftl, CharsetUtil.UTF_8);
     }
 
     protected void writeFile(File file, String ftl, Object dataModel) throws IOException, TemplateException {

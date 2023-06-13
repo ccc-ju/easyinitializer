@@ -19,9 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 /**
  * <p>
@@ -48,23 +46,27 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
             // 生成项目
             iProjectGenerator.generator(ProjectInfoConverter.convertProjectInitDTO2ProjectInfo(projectInitDTO));
 
-            // 获取classes下的目录
-            URL resource = Optional.ofNullable(Thread.currentThread().getContextClassLoader().getResource(projectInitDTO.getProjectName()))
-                    .orElseThrow(() -> new InitializerException("0002", "文件资源获取失败"));
+            // 获取目录
+            String path = System.getProperty("user.dir") + "/" + projectInitDTO.getProjectName();
+            boolean notEmpty = FileUtil.isNotEmpty(new File(path));
+            if (!notEmpty) {
+                logger.error("项目生成失败, 生成项目目录为null");
+                throw new InitializerException("0002", "项目生成失败");
+            }
 
             // 打包压缩包
-            ZipUtil.zip(new File(resource.getPath()));
+            ZipUtil.zip(new File(path));
 
             // 删除文件夹（防止下次生成时有缓存导致压缩文件有问题
-            FileUtil.del(resource.getPath());
+            FileUtil.del(path);
 
             ServletOutputStream outputStream = response.getOutputStream();
 
             // 下载
-            downLoad(projectInitDTO.getProjectName() + ".zip", projectInitDTO, response, resource, outputStream);
+            downLoad(projectInitDTO.getProjectName() + ".zip", projectInitDTO, response, path, outputStream);
 
             // 下载后删除文件
-            FileUtil.del(resource.getPath() + ".zip");
+            FileUtil.del(path + ".zip");
         } catch (Exception e) {
             logger.error("项目生成失败, 错误堆栈: ", e);
             throw new InitializerException("0001", "项目生成失败");
@@ -72,8 +74,8 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
 
     }
 
-    private static void downLoad(String fileName, ProjectInitDTO projectInitDTO, HttpServletResponse response, URL resource, ServletOutputStream outputStream) throws IOException {
-        BufferedInputStream inputStream = FileUtil.getInputStream(new File(resource.getPath() + ".zip"));
+    private static void downLoad(String fileName, ProjectInitDTO projectInitDTO, HttpServletResponse response, String resource, ServletOutputStream outputStream) throws IOException {
+        BufferedInputStream inputStream = FileUtil.getInputStream(new File(resource + ".zip"));
         byte[] bytes = StreamUtils.copyToByteArray(inputStream);
         response.reset();
         response.setContentType("application/octet-stream");
