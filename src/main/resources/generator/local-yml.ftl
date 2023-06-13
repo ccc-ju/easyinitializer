@@ -8,7 +8,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       #  公网地址
-      url: jdbc:mysql://${databaseLink}-dev?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://${databaseLink}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
       #  内网地址
       #url: jdbc:mysql://rm-bp193v7i846v01k44.mysql.rds.aliyuncs.com:3306/ins?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
       username: ${username}

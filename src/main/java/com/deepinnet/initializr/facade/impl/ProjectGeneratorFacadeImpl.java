@@ -7,6 +7,7 @@ import com.deepinnet.initializr.converter.ProjectInfoConverter;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
 import com.deepinnet.initializr.exception.InitializerException;
 import com.deepinnet.initializr.facade.ProjectGeneratorFacade;
+import com.deepinnet.initializr.infrastructure.utils.MybatisPlusGenerator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,9 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
                 logger.error("项目生成失败, 生成项目目录为null");
                 throw new InitializerException("0002", "项目生成失败");
             }
+
+            // mybaits-plus-generator生成do及相应的基础代码
+            MybatisPlusGenerator.generator(projectInitDTO, path);
 
             // 打包压缩包
             ZipUtil.zip(new File(path));
