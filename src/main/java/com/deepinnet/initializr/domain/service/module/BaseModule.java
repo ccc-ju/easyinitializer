@@ -25,15 +25,18 @@ import java.util.jar.JarFile;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class BaseModule {
 
-    private final static String ENCODING = "UTF-8";
+    private final static String RESOURCE_PATH  = "generator";
+
+    private final static String FILE = "file";
+
+    private final static String JAR = "jar";
 
     private static Configuration cfg;
 
     static {
-        String resourcePath = "generator";
-        URL resourceUrl = ResourceLoader.class.getClassLoader().getResource(resourcePath);
+        URL resourceUrl = ResourceLoader.class.getClassLoader().getResource(RESOURCE_PATH);
         // 非jar包方式载入
-        if (resourceUrl != null && resourceUrl.getProtocol().equals("file")) {
+        if (resourceUrl != null && resourceUrl.getProtocol().equals(FILE)) {
             try {
                 File resourceDir = Paths.get(resourceUrl.toURI()).toFile();
                 cfg = new Configuration(Configuration.VERSION_2_3_23);
@@ -45,7 +48,7 @@ public class BaseModule {
         }
 
         // jar包方式载入
-        if (resourceUrl != null && resourceUrl.getProtocol().equals("jar")) {
+        if (resourceUrl != null && resourceUrl.getProtocol().equals(JAR)) {
             try {
                 JarURLConnection jarConnection = (JarURLConnection) resourceUrl.openConnection();
                 JarFile jarFile = jarConnection.getJarFile();
@@ -55,17 +58,17 @@ public class BaseModule {
                 StringTemplateLoader stringTemplateLoader = new StringTemplateLoader();
                 while (entries.hasMoreElements()) {
                     JarEntry entry = entries.nextElement();
-                    if (!entry.isDirectory() && entry.getName().startsWith("generator/") && entry.getName().endsWith(".ftl")) {
+                    if (!entry.isDirectory() && entry.getName().startsWith(RESOURCE_PATH + File.separator) && entry.getName().endsWith(".ftl")) {
                         try (InputStream inputStream = jarFile.getInputStream(entry);
                              InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
                             String templateContent = readInputStream(inputStreamReader);
-                            String templateName = entry.getName().replace("generator/", "");
+                            String templateName = entry.getName().replace(RESOURCE_PATH + File.separator, "");
                             stringTemplateLoader.putTemplate(templateName, templateContent);
                         }
                     }
                 }
                 cfg.setTemplateLoader(stringTemplateLoader);
-                cfg.setDefaultEncoding("UTF-8");
+                cfg.setDefaultEncoding(CharsetUtil.UTF_8);
             } catch (IOException e) {
                 e.printStackTrace();
             }
