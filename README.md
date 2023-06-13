@@ -26,7 +26,6 @@
 
 - [https://stackoverflow.com/questions/235018/what-is-scaffolding-is-it-a-term-for-a-particular-platform](https://stackoverflow.com/questions/235018/what-is-scaffolding-is-it-a-term-for-a-particular-platform)
 
-![脚手架](https://bugstack.cn/assets/images/2020/all-28-2.png)
 
 结合 stackoverflow 上的回答，脚手架是一种元编程方法，用于构建基于数据的应用。创建系统架构的程序员编写一份规格说明书，用于描述怎么去使用数据库。而脚手架可以根据这份规则说明书生成相应的框架代码。我们把这种模式成为脚手架，在脚手架上更高效的构建出 `powerful` 的应用！
 
@@ -36,7 +35,7 @@
 
 ### 1、Spring 官网脚手架
 
-![spring initializr](https://bugstack.cn/assets/images/2020/all-28-3.png)
+![spring initializr](https://image.laobinggun.site/github/spring.png)
 
 - 推荐：⭐⭐⭐⭐
 - 链接：[https://start.spring.io](https://start.spring.io/)
@@ -45,7 +44,7 @@
 
 ### 2、阿里云脚手架
 
-![Aliyun Java Initializr](https://bugstack.cn/assets/images/2020/all-28-4.png)
+![Aliyun Java Initializr](https://image.laobinggun.site/github/alibaba.png)
 
 - 推荐：⭐⭐⭐⭐
 - 链接：[https://start.spring.io](https://start.spring.io/)
@@ -71,42 +70,8 @@
 
 ```java
 EasyInitializr
-└── src
-    ├── main
-    │   ├── java
-    │   │   └── com.deepinnet.initializr
-    │   │       ├── application
-    │   │       │		└── IProjectGenerator.java
-    │   │       ├── domain
-    │   │       │		├── model
-    │   │       │		│   └── ApplicationInfo.java	    
-    │   │       │		│   └── ProjectInfo.java	
-    │   │       │		└── service
-    │   │       │		    ├── module
-    │   │       │		    │		├── impl
-    │   │       │		    │  	│   ├── GenerationApplication.java
-    │   │       │		    │  	│   ├── GenerationIgnore.java
-    │   │       │		    │  	│   ├── GenerationPackageInfo.java
-    │   │       │		    │  	│   ├── GenerationPom.java
-    │   │       │		    │  	│   ├── GenerationTest.java    
-    │   │       │		    │  	│   └── GenerationYml.java     
-    │   │       │		    │   └── BaseModule.java    
-    │   │       │		    └── ProjectGeneratorImpl.java
-    │   │       └── InitializrApplication.java
-    │   └── resources	
-    │       ├── generator
-    │       │  	├── application.ftl
-    │       │  	├── ignore.ftl 
-    │       │  	├── package-info.ftl 
-    │       │  	├── pom.ftl 
-    │       │  	├── test.ftl     
-    │       │  	└── ...
-    │       └── application.yml
-    └── test
-         └── java
-             └── com.deepinnet.initializr.test
-                 └── ApiTest.java
 ```
+![img.png](https://image.laobinggun.site/github/img.png)
 
 脚手架生成工程
 
@@ -114,211 +79,9 @@ EasyInitializr
 
 整个工程结构偏 DDD 层次结构，domain 领域中建设了所有的生成方式，resources/generator 定义生成模板，其他地方就没有太大的差异了。
 
-接下来简单介绍下这个工程的代码，让大家可以理解这样的工程是如何开发的，也可以通过这样工程继续完善成自己需要的结构。
-
-### 2. 应用层定义生成类接口
-
-**application.com.deepinnet.initializr.IProjectGenerator.java**
-
-```java
-public interface IProjectGenerator {
-
-    void generator(ProjectInfo projectInfo) throws Exception;
-
-}
-```
-
-- DDD 的分层结构，通常都会在 application 这个比较薄的层定义接口，再有 domain 领域层做相应的实现。
-- 这个接口的定义主要是为了，让外部调用方可以通过此接口创建工程框架。
-
-### 3. FTL 模板定义
-
-**什么是 FreeMarker?**
-
-什么是 FreeMarker?
-
-FreeMarker 是一款 模板引擎： 即一种基于模板和要改变的数据， 并用来生成输出文本(HTML网页，电子邮件，配置文件，源代码等)的通用工具。 它不是面向最终用户的，而是一个Java类库，是一款程序员可以嵌入他们所开发产品的组件。
-
-模板编写为FreeMarker Template Language (FTL)。它是简单的，专用的语言， 不是 像PHP那样成熟的编程语言。 那就意味着要准备数据在真实编程语言中来显示，比如数据库查询和业务运算， 之后模板显示已经准备好的数据。在模板中，你可以专注于如何展现数据， 而在模板之外可以专注于要展示什么数据。
-
-- FreeMarker 在线手册：[http://freemarker.foofun.cn](http://freemarker.foofun.cn/)
-
-#### 3.1 application.ftl
-
-```java
-package ${packageName};
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class ${className} {
-
-    public static void main(String[] args) {
-        SpringApplication.run(${className}.class, args);
-    }
-
-}
-```
-
-#### 3.2 pom.ftl
-
-```java
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    <groupId>${groupId}</groupId>
-    <artifactId>${artifactId}</artifactId>
-    <version>${version}</version>
-    <name>${name}</name>
-    <description>${description}</description>
-    
-</project>
-```
-
-#### 3.3 yml.ftl
-
-```java
-server:
-  port: 8081
-```
-
-**以上**，只是用于生成框架文件的基础 ftl 文件，有需要一些特殊判断和逻辑的，可以参考[FreeMarker 在线手册](http://freemarker.foofun.cn/)，编写自己需要的 ftl 文件。
-
-### 4. FTL 生成文件
-
-**impl.module.service.domain.com.deepinnet.initializr.GenerationApplication.java**
-
-```java
-@Service
-public class GenerationApplication extends BaseModule {
-
-    private final Logger logger = LoggerFactory.getLogger(GenerationApplication.class);
-
-    public void doGeneration(ProjectInfo projectInfo, String projectsRoot, String lastPackageName, StringBuffer applicationJavaName) throws Exception {
-
-        ApplicationInfo applicationInfo = new ApplicationInfo(
-                projectInfo.getGroupId() + "." + lastPackageName,
-                applicationJavaName.toString()
-        );
-
-        String packagePath = applicationInfo.getPackageName().replace(".", "/") + "/";
-
-        File file = new File(projectsRoot + projectInfo.getArtifactId() + "/src/main/java/" + packagePath,
-                applicationInfo.getClassName() + ".java");
-
-        // 写入文件
-        super.writeFile(file, "application.ftl", applicationInfo);
-
-        logger.info("创建主入口类 Application.java {}", file.getPath());
-    }
-
-}
-```
-
-- 关于 ftl 文件的使用，无论在用于生成那一层的文件，基本都是通用。这里只展示一下关于 Application.java 的创建。
-- 主要包括了，定义入参 `ApplicationInfo`、定义文件位置 `/src/main/java/`、以及写入到文件 `super.writeFile`，这三方面。
-
-### 5. 创建框架入口
-
-**service.domain.com.deepinnet.initializr.ProjectGeneratorImpl.java**
-
-```java
-@Service
-public class ProjectGeneratorImpl implements IProjectGenerator {
-
-    private final Logger logger = LoggerFactory.getLogger(ProjectGeneratorImpl.class);
-
-    @Resource
-    private GenerationApplication generationApplication;
-    @Resource
-    private GenerationYml generationYml;
-    @Resource
-    private GenerationPom generationPom;
-    @Resource
-    private GenerationTest generationTest;
-    @Resource
-    private GenerationIgnore generationIgnore;
-    @Resource
-    private GenerationPackageInfo generationPackageInfo;
-
-    @Override
-    public void generator(ProjectInfo projectInfo) throws Exception {
-
-        URL resource = this.getClass().getResource("/");
-        String projectsRoot = resource.getFile() + "/projects/";
-
-        String lastPackageName = projectInfo.getArtifactId().replaceAll("-", "").toLowerCase();
-        //启动类名称
-        String[] split = projectInfo.getArtifactId().split("-");
-        StringBuffer applicationJavaName = new StringBuffer();
-        Arrays.asList(split).forEach(s -> {
-            applicationJavaName.append(s.substring(0, 1).toUpperCase() + s.substring(1));
-        });
-        applicationJavaName.append("Application");
-
-        // 1. 创建  Application.java
-        generationApplication.doGeneration(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
-
-        // 2. 生成 application.yml
-        generationYml.doGeneration(projectInfo, projectsRoot);
-
-        // 3. 生成 pom.xml
-        generationPom.doGeneration(projectInfo, projectsRoot);
-
-        // 4. 创建测试类 ApiTest.java
-        generationTest.doGeneration(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
-
-        // 5. 生成 .gitignore
-        generationIgnore.doGeneration(projectInfo, projectsRoot);
-
-        // 6. DDD 四层描述文件
-        generationPackageInfo.doGeneration(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
-
-    }
-
-}
-```
-
-`ProjectGeneratorImpl` 类，就是应用层接口 `IProjectGenerator` 在领域层的具体实现。这里包括了如下内容：
-1. 创建  Application.java
-2. 生成 application.yml
-3. 生成 pom.xml
-4. 创建测试类 ApiTest.java
-5. 生成 .gitignore
-6. DDD 四层描述文件
-
 **综上**，就是整个脚手架生成的简要介绍，其实并没有多复杂，主要就是 ftl 文件的定义和使用，这种创建脚手架的方式还是很方便的。
 
 ### 6. 测试验证
-
-**单元测试**
-
-```java
-@Test
-public void test_IProjectGenerator() throws Exception {
-    ProjectInfo projectInfo = new ProjectInfo(
-            "cn.bugstack.demo",
-            "web-test",
-            "1.0.0-SNAPSHOT",
-            "web-test",
-            "Demo project for Spring Boot"
-    );
-    iProjectGenerator.generator(projectInfo);
-}
-```
-
-**测试结果**
-
-- 脚手架把创建出来的工程生成到 test-classes 下，这个路径也可以配置到其他路径里。
-- 有了新生成的工程就可以通过 IDEA 打开了，与我们手动创建的工程是一样的。
 
 **网页访问**
 
