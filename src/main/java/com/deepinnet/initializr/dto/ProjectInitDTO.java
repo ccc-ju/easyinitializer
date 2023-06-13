@@ -40,4 +40,19 @@ public class ProjectInitDTO implements Serializable {
      */
     private String description;
 
+    /**
+     * 数据库连接
+     */
+    private String databaseLink;
+
+    /**
+     * 数据库连接用户名
+     */
+    private String username;
+
+    /**
+     * 数据库连接密码
+     */
+    private String password;
+
 }

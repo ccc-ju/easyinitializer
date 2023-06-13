@@ -39,7 +39,7 @@
         label {
             display: block;
             font-size: 16px;
-            flex: 70px 0 0;
+            flex: 90px 0 0;
         }
 
         label::after {
@@ -168,7 +168,12 @@
         }
 
         #spanId,
-        #spanName {
+        #spanName,
+        #spanVersion,
+        #spanDescription,
+        #spanDatabase,
+        #spanUsername,
+        #spanPassword {
             margin-left: 90px;
         }
     </style>
@@ -178,24 +183,45 @@
     <form class="form-box" id="form" onsubmit=onDownload(event)>
         <h1 class="form-title">项目生成工具</h1>
         <div class="form-item">
-            <label>坐标</label>
+            <label>坐&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标</label>
             <input type="text" id="groupId" class="text-input" placeholder="com.deepinnet.xxx" oninput="setCustomValidity('')"
                 oninvalid="setCustomValidity('请输入坐标')" onblur="checkGroupId()" required>
-        </div><span id="spanId"></span>
+        </div>
+        <span id="spanId"></span>
         <div class="form-item">
-            <label>名称</label>
+            <label>名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称</label>
             <input type="text" id="projectName" class="text-input" placeholder="请输入项目名" oninput="setCustomValidity('')"
                 oninvalid="setCustomValidity('请输入项目名')" onblur="checkProjectName()" required>
-        </div><span id="spanName"></span>
-        <div class="form-item">
-            <label>版本</label>
-            <input type="text" id="version" class="text-input" placeholder="请输入版本">
-        </div><span id="spanName"></span>
-        <div class="form-item">
-            <label>描述</label>
-            <textarea type="textarea" id="description" rows="5" class="text-input" placeholder="请输入描述"></textarea>
         </div>
         <span id="spanName"></span>
+        <div class="form-item">
+            <label>版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
+            <input type="text" id="version" class="text-input" placeholder="请输入版本">
+        </div>
+        <span id="spanVersion"></span>
+        <div class="form-item">
+            <label>描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述</label>
+            <textarea type="textarea" id="description" rows="5" class="text-input" placeholder="请输入描述"></textarea>
+        </div>
+        <span id="spanDescription"></span>
+        <div class="form-item">
+            <label>database</label>
+            <input type="text" id="databaseLink" class="text-input" placeholder="127.0.0.1:3306/esp-policy-env-dev"
+                oninvalid="setCustomValidity('请输入数据库连接')" onblur="checkDatabase()" required>
+        </div>
+        <span id="spanDatabase"></span>
+        <div class="form-item">
+            <label>用&nbsp;&nbsp户&nbsp;&nbsp;名</label>
+            <input type="text" id="username" class="text-input" placeholder="123456"
+                oninvalid="setCustomValidity('请输入数据库用户名')" onblur="checkDatabaseUsername()" required>
+        </div>
+        <span id="spanUsername"></span>
+        <div class="form-item">
+            <label>密码</label>
+            <input type="text" id="password" class="text-input" placeholder="请输入数据库密码"
+                oninvalid="setCustomValidity('请输入数据库密码')" onblur="checkDatabasePassword()" required>
+        </div>
+        <span id="spanPassword"></span>
         <div class="form-item">
             <button class="form-download" type="submit" value="下 载" onclick="onDownload(event); return false;" onmousemove="move(event)">
                 <span>下 载</span>
@@ -241,12 +267,51 @@
         return true;
     }
 
+    // 校验database连接
+    function checkDatabase() {
+        var positionIptProjectName = document.getElementById('databaseLink');
+        var spanDatabase = document.getElementById('spanDatabase');
+        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+            spanDatabase.innerHTML = '请输入数据库连接'.fontcolor("#7575ef");
+            return false;
+        }
+        spanDatabase.innerHTML = '';
+        return true;
+    }
+
+    // 校验database-username
+    function checkDatabaseUsername() {
+        var positionIptProjectName = document.getElementById('username');
+        var spanUsername = document.getElementById('spanUsername');
+        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+            spanUsername.innerHTML = '请输入用户名'.fontcolor("#7575ef");
+            return false;
+        }
+        spanUsername.innerHTML = '';
+        return true;
+    }
+
+    // 校验database-password
+    function checkDatabasePassword() {
+        var positionIptProjectName = document.getElementById('password');
+        var spanPassword = document.getElementById('spanPassword');
+        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+            spanPassword.innerHTML = '请输入密码'.fontcolor("#7575ef");
+            return false;
+        }
+        spanPassword.innerHTML = '';
+        return true;
+    }
+
     // 验证表单数据
     function onDownload() {
         let groupIdCheck = checkGroupId();
         let projectNameCheck = checkProjectName();
+        let databaseLinkCheck = checkDatabase();
+        let databaseUsernameCheck = checkDatabaseUsername();
+        let databasePasswordCheck = checkDatabasePassword();
 
-        if (!groupIdCheck || !projectNameCheck) {
+        if (!groupIdCheck || !projectNameCheck || !databaseLinkCheck || !databaseUsernameCheck || !databasePasswordCheck) {
             return false;
         }
 
@@ -255,13 +320,19 @@
         const projectName = document.getElementById('projectName').value;
         const version = document.getElementById('version').value;
         const description = document.getElementById('description').value;
+        const databaseLink = document.getElementById('databaseLink').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
         // 构建请求参数
         const data = {
             groupId: groupId,
             projectName: projectName,
             version: version,
-            description: description
+            description: description,
+            databaseLink: databaseLink,
+            username: username,
+            password: password
         };
 
         axios.defaults.timeout = 300000;

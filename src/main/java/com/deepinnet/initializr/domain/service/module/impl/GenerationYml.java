@@ -44,7 +44,7 @@ public class GenerationYml extends BaseModule {
         );
 
         // 写入文件
-        super.writeFile(applicationDev, "dev-yml.ftl", null);
+        super.writeFile(applicationDev, "dev-yml.ftl", projectInfo);
 
         logger.info("创建配置文件 application-dev.yml {}", applicationDev.getPath());
 
@@ -54,7 +54,7 @@ public class GenerationYml extends BaseModule {
         );
 
         // 写入文件
-        super.writeFile(applicationLocal, "local-yml.ftl", null);
+        super.writeFile(applicationLocal, "local-yml.ftl", projectInfo);
 
         logger.info("创建配置文件 application-local.yml {}", applicationLocal.getPath());
 
@@ -65,7 +65,7 @@ public class GenerationYml extends BaseModule {
         );
 
         // 写入文件
-        super.writeFile(applicationTest, "test-yml.ftl", null);
+        super.writeFile(applicationTest, "test-yml.ftl", projectInfo);
 
         logger.info("创建配置文件 application-test.yml {}", applicationTest.getPath());
 
@@ -76,7 +76,7 @@ public class GenerationYml extends BaseModule {
         );
 
         // 写入文件
-        super.writeFile(applicationPre, "pre-yml.ftl", null);
+        super.writeFile(applicationPre, "pre-yml.ftl", projectInfo);
 
         logger.info("创建配置文件 application-pre.yml {}", applicationPre.getPath());
 
@@ -87,7 +87,7 @@ public class GenerationYml extends BaseModule {
         );
 
         // 写入文件
-        super.writeFile(applicationProd, "prod-yml.ftl", null);
+        super.writeFile(applicationProd, "prod-yml.ftl", projectInfo);
 
         logger.info("创建配置文件 application-prod.yml {}", applicationProd.getPath());
 

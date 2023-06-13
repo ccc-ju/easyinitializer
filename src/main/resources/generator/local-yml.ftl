@@ -8,11 +8,11 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       #  公网地址
-      url: jdbc:mysql://127.0.0.1:3306/esp-policy-env-dev?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://${databaseLink}-dev?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
       #  内网地址
       #url: jdbc:mysql://rm-bp193v7i846v01k44.mysql.rds.aliyuncs.com:3306/ins?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-      username: 123456
-      password: 123456
+      username: ${username}
+      password: ${password}
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
       filters: stat,wall
       initialSize: 5

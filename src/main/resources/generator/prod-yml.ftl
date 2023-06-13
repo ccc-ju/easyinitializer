@@ -8,10 +8,10 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       #  公网地址 记得替换地址！！！
-      url: jdbc:mysql://127.0.0.1:3306/esp-policy-env?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://${databaseLink}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
       #  内网地址
-      username: 123456
-      password: 123456
+      username: ${username}
+      password: ${password}
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
       filters: stat,wall
       initialSize: 5
