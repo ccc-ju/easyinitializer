@@ -13,6 +13,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.deepinnet</groupId>
             <artifactId>${artifactId}-biz-service-impl</artifactId>
             <version>1.0-SNAPSHOT</version>

@@ -27,11 +27,7 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
     @Resource
     private GenerationParentPom generationParentPom;
     @Resource
-    private GenerationTest generationTest;
-    @Resource
     private GenerationIgnore generationIgnore;
-    @Resource
-    private GenerationPackageInfo generationPackageInfo;
     @Resource
     private GenerationReadme generationReadme;
     @Resource
@@ -98,6 +94,9 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
     @Resource
     private GenerationKnife4jConfiguration generationKnife4jConfiguration;
 
+    @Resource
+    private GenerationLogback generationLogback;
+
     @Override
     public void generator(ProjectInfo projectInfo) throws Exception {
 
@@ -144,13 +143,16 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
         // 1. 生成 application.yml
         generationYml.doGeneration(projectInfo, projectsRoot);
 
-        // 2. 生成 pom.xml
+        // 2.生成logback日志文件
+        generationLogback.doGeneration(projectInfo, projectsRoot);
+
+        // 3. 生成 pom.xml
         generationAppStarterPom.doGeneration(projectInfo, projectsRoot);
 
-        // 3. 创建  Application.java
+        // 4. 创建  Application.java
         generationApplication.doGeneration(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
 
-        // 4.生成knife4j配置类
+        // 5.生成knife4j配置类
         generationKnife4jConfiguration.doGeneration(projectInfo, projectsRoot);
     }
 
