@@ -81,11 +81,25 @@ EasyInitializr
 
 **综上**，就是整个脚手架生成的简要介绍，其实并没有多复杂，主要就是 ftl 文件的定义和使用，这种创建脚手架的方式还是很方便的。
 
-### 6. 测试验证
+### 2. 如何使用
 
 **网页访问**
 
 运行项目，打开 http:127.0.0.1:8081/index.html
+
 输入项目信息，点击 '下载' 按钮，即可下载已经生成的项目zip文件
+
 注：项目中为了防止信息泄漏，模板中未定义redis / mysql数据库 连接及密码
+
+![项目截图](https://image.laobinggun.site/github/projectinit.png)
+
+下载后的项目直接使用idea打开:
+![项目结构](https://image.laobinggun.site/github/openproject.png)
+
+生成的项目代码:
+![部分代码示例](https://image.laobinggun.site/github/code-example.png)
+
+### 3.更多功能还在加紧排期完善中，敬请期待...
+
+
 
