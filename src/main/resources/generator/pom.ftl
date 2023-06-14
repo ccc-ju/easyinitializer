@@ -54,8 +54,8 @@
         <aliyun-oss.version>3.15.1</aliyun-oss.version>
 
         <!-- 深度智联内部二方包 -->
-        <deepinnet-common-boot-starter-version>1.0.0.20230327-RELEASE</deepinnet-common-boot-starter-version>
-        <deepinnet-common-lang-version>1.0.0.20230321-SNAPSHOT</deepinnet-common-lang-version>
+        ${r"<!--<deepinnet-common-boot-starter-version>1.0.0.20230327-RELEASE</deepinnet-common-boot-starter-version>
+        <deepinnet-common-lang-version>1.0.0.20230321-SNAPSHOT</deepinnet-common-lang-version>-->"}
 
         <!--本项目各模块的版本-->
         <${artifactId}.version>1.0-SNAPSHOT</${artifactId}.version>
@@ -65,17 +65,17 @@
     <dependencyManagement>
         <dependencies>
             <!-- 引入deepinnet-common-boot-starter -->
-            <dependency>
+        ${r"<!-- <dependency>
                 <groupId>com.deepinnet</groupId>
                 <artifactId>deepinnet-common-boot-starter</artifactId>
-                <version>${r"${deepinnet-common-boot-starter-version}"}</version>
+                <version>${deepinnet-common-boot-starter-version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.deepinnet</groupId>
                 <artifactId>deepinnet-common-lang</artifactId>
-                <version>${r"${deepinnet-common-lang-version}"}</version>
-            </dependency>
+                <version>${deepinnet-common-lang-version}</version>
+            </dependency>-->"}
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -271,7 +271,7 @@
 
     <dependencies>
         <!-- 引入deepinnet-common-boot-starter -->
-        <dependency>
+    ${r"<!-- <dependency>
             <groupId>com.deepinnet</groupId>
             <artifactId>deepinnet-common-boot-starter</artifactId>
         </dependency>
@@ -279,7 +279,7 @@
         <dependency>
             <groupId>com.deepinnet</groupId>
             <artifactId>deepinnet-common-lang</artifactId>
-        </dependency>
+        </dependency>-->"}
 
         <dependency>
             <groupId>org.projectlombok</groupId>
