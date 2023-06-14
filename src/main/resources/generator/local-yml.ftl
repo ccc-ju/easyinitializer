@@ -67,6 +67,3 @@ logging:
         cloud:
           nacos:
             client: debug
-
-oss:
-endpoint: oss-cn-hangzhou.aliyuncs.com
