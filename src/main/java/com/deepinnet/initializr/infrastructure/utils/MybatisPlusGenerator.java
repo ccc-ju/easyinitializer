@@ -343,9 +343,9 @@ public class MybatisPlusGenerator {
         // 不生成controller
         // String controllerProject =  "";
 
-        String position = groupId.replace(".", "/");
+        String position = "/" + groupId.replace(".", "/");
         /*存放各文件的包路径*/
-        String xmlPackage =         "/mybatis/mapper";
+        String xmlPackage = "/mybatis/mapper";
         String entityPackage = position + "/common/dal/dataobject";
         String mapperPackage = position + "/common/dal/dao";
         String servicePackage = position + "/core/repository";
