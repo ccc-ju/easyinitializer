@@ -164,7 +164,6 @@ public class MybatisPlusGenerator {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                throw new InitializerException("0006", "数据库连接关闭异常");
             }
 
         }
@@ -213,7 +212,7 @@ public class MybatisPlusGenerator {
                         // Entity 包名
                         .entity(entityPackageName)
                         // 设置mapperXml生成路径
-                        .pathInfo(pathInfo(projectName))
+                        .pathInfo(pathInfo(projectName, projectInitDTO.getGroupId()))
                         .build())
                 // 模板配置
                 .templateConfig(builder -> builder
@@ -322,7 +321,7 @@ public class MybatisPlusGenerator {
      * 各文件的输出路径
      * @return pathInfo
      */
-    public static Map<OutputFile, String> pathInfo(String projectName) {
+    public static Map<OutputFile, String> pathInfo(String projectName, String groupId) {
         // 基础路径
         String basePath = System.getProperty("user.dir") + "/" + projectName;
         // java代码的路径
@@ -344,12 +343,13 @@ public class MybatisPlusGenerator {
         // 不生成controller
         // String controllerProject =  "";
 
+        String position = groupId.replace(".", "/");
         /*存放各文件的包路径*/
         String xmlPackage =         "/mybatis/mapper";
-        String entityPackage =      "/com/deepinnet/" + projectName + "/common/dal/dataobject";
-        String mapperPackage =      "/com/deepinnet/" + projectName + "/common/dal/dao";
-        String servicePackage =     "/com/deepinnet/" + projectName + "/core/repository";
-        String serviceImplPackage = "/com/deepinnet/" + projectName + "/core/repository/impl";
+        String entityPackage = position + "/common/dal/dataobject";
+        String mapperPackage = position + "/common/dal/dao";
+        String servicePackage = position + "/core/repository";
+        String serviceImplPackage = position + "/core/repository/impl";
         // 不生成controller
         // String controllerPackage =  "/com.generator/controller";
 
