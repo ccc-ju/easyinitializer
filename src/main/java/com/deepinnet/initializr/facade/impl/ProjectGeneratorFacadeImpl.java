@@ -50,10 +50,10 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
         initializerEngine.execute(projectInitDTO, InitializerTypeEnum.DEEPINNET);
 
         // 项目下载
-        zipDownLoad(projectInitDTO, response);
+        zipDownload(projectInitDTO, response);
     }
 
-    private void zipDownLoad(ProjectInitDTO projectInitDTO, HttpServletResponse response) {
+    private void zipDownload(ProjectInitDTO projectInitDTO, HttpServletResponse response) {
         try {
             // 打包压缩包
             ZipUtil.zip(new File(projectInitDTO.getPath()));
@@ -64,7 +64,7 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
             ServletOutputStream outputStream = response.getOutputStream();
 
             // 下载
-            downLoad(projectInitDTO.getProjectName() + ".zip", response, projectInitDTO.getPath(), outputStream);
+            download(projectInitDTO.getProjectName() + ".zip", response, projectInitDTO.getPath(), outputStream);
 
             // 下载后删除文件
             FileUtil.del(projectInitDTO.getPath() + ".zip");
@@ -74,7 +74,7 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
         }
     }
 
-    private void downLoad(String fileName, HttpServletResponse response, String resource, ServletOutputStream outputStream) throws IOException {
+    private void download(String fileName, HttpServletResponse response, String resource, ServletOutputStream outputStream) throws IOException {
         BufferedInputStream inputStream = FileUtil.getInputStream(new File(resource + ".zip"));
         byte[] bytes = StreamUtils.copyToByteArray(inputStream);
         response.reset();
