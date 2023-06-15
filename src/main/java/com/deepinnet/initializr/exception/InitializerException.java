@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class InitializerException extends RuntimeException {
 
-    private static final long serialVersionUID = 6687164311142885369L;
+    private static final long serialVersionUID = 7584404361286515143L;
 
     /**
      * 错误码

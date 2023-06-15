@@ -21,7 +21,7 @@ public class GlobalRestExceptionInterceptor {
     @ExceptionHandler({MissingServletRequestParameterException.class, MissingServletRequestPartException.class})
     public Result<Object> missingParamException(Exception ex){
         logger.error(ex.getMessage(), ex);
-        return Result.fail("0003", "参数异常");
+        return Result.fail("0002", "参数异常");
     }
 
     /**

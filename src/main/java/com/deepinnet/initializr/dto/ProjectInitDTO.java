@@ -55,4 +55,9 @@ public class ProjectInitDTO implements Serializable {
      */
     private String password;
 
+    /**
+     * 路径(前端无需此参数)
+     */
+    private String path;
+
 }

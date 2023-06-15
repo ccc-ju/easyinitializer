@@ -2,12 +2,12 @@ package com.deepinnet.initializr.facade.impl;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
-import com.deepinnet.initializr.application.IProjectGenerator;
-import com.deepinnet.initializr.converter.ProjectInfoConverter;
+import com.deepinnet.initializr.domain.enums.InitializerErrorCode;
+import com.deepinnet.initializr.domain.enums.InitializerTypeEnum;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
+import com.deepinnet.initializr.engine.InitializerEngine;
 import com.deepinnet.initializr.exception.InitializerException;
 import com.deepinnet.initializr.facade.ProjectGeneratorFacade;
-import com.deepinnet.initializr.infrastructure.utils.MybatisPlusGenerator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,48 +37,44 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
 
     private final Logger logger = LoggerFactory.getLogger(ProjectGeneratorFacadeImpl.class);
 
-    private final IProjectGenerator iProjectGenerator;
+    private final InitializerEngine initializerEngine;
 
     @Override
     public void generatorProject(ProjectInitDTO projectInitDTO, HttpServletResponse response) {
         checkParams(projectInitDTO);
 
+        // 给定项目目录
+        projectInitDTO.setPath(System.getProperty("user.dir") + "/" + projectInitDTO.getProjectName());
+
+        // 生成项目结构及相应的基础代码
+        initializerEngine.execute(projectInitDTO, InitializerTypeEnum.DEEPINNET);
+
+        // 项目下载
+        zipDownLoad(projectInitDTO, response);
+    }
+
+    private void zipDownLoad(ProjectInitDTO projectInitDTO, HttpServletResponse response) {
         try {
-            // 生成项目
-            iProjectGenerator.generator(ProjectInfoConverter.convertProjectInitDTO2ProjectInfo(projectInitDTO));
-
-            // 获取目录
-            String path = System.getProperty("user.dir") + "/" + projectInitDTO.getProjectName();
-            boolean notEmpty = FileUtil.isNotEmpty(new File(path));
-            if (!notEmpty) {
-                logger.error("项目生成失败, 生成项目目录为null");
-                throw new InitializerException("0002", "项目生成失败");
-            }
-
-            // mybaits-plus-generator生成do及相应的基础代码
-            MybatisPlusGenerator.generator(projectInitDTO, path);
-
             // 打包压缩包
-            ZipUtil.zip(new File(path));
+            ZipUtil.zip(new File(projectInitDTO.getPath()));
 
             // 删除文件夹（防止下次生成时有缓存导致压缩文件有问题
-            FileUtil.del(path);
+            FileUtil.del(projectInitDTO.getPath());
 
             ServletOutputStream outputStream = response.getOutputStream();
 
             // 下载
-            downLoad(projectInitDTO.getProjectName() + ".zip", projectInitDTO, response, path, outputStream);
+            downLoad(projectInitDTO.getProjectName() + ".zip", response, projectInitDTO.getPath(), outputStream);
 
             // 下载后删除文件
-            FileUtil.del(path + ".zip");
-        } catch (Exception e) {
-            logger.error("项目生成失败, 错误堆栈: ", e);
-            throw new InitializerException("0001", "项目生成失败");
+            FileUtil.del(projectInitDTO.getPath() + ".zip");
+        } catch (IOException e) {
+            logger.error("download error");
+            throw new InitializerException(InitializerErrorCode.DOWN_LOAD_ERROR.getErrorCode(), InitializerErrorCode.DOWN_LOAD_ERROR.getErrorCode());
         }
-
     }
 
-    private static void downLoad(String fileName, ProjectInitDTO projectInitDTO, HttpServletResponse response, String resource, ServletOutputStream outputStream) throws IOException {
+    private void downLoad(String fileName, HttpServletResponse response, String resource, ServletOutputStream outputStream) throws IOException {
         BufferedInputStream inputStream = FileUtil.getInputStream(new File(resource + ".zip"));
         byte[] bytes = StreamUtils.copyToByteArray(inputStream);
         response.reset();
@@ -89,8 +85,7 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
         outputStream.flush();
     }
 
-
-    private static void checkParams(ProjectInitDTO projectInitDTO) {
+    private void checkParams(ProjectInitDTO projectInitDTO) {
         Assert.notNull(projectInitDTO, "入参不能为空");
         Assert.hasText(projectInitDTO.getProjectName(), "项目名称不能为空");
         Assert.hasText(projectInitDTO.getGroupId(), "项目目录结构不能为空");
