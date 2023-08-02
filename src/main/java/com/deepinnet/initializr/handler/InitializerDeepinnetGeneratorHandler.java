@@ -1,6 +1,7 @@
 package com.deepinnet.initializr.handler;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.deepinnet.initializr.application.IProjectGenerator;
 import com.deepinnet.initializr.converter.ProjectInfoConverter;
@@ -46,8 +47,12 @@ public class InitializerDeepinnetGeneratorHandler implements InitializerGenerato
                 throw new InitializerException("0001", "项目生成失败");
             }
 
-            // mybatis-plus-generator生成do及相应的基础代码
-            MybatisPlusGenerator.generator(projectInitDTO, projectInitDTO.getPath());
+            if (StrUtil.isNotBlank(projectInitDTO.getDatabaseLink())
+                    && StrUtil.isNotBlank(projectInitDTO.getUsername())
+                    && StrUtil.isNotBlank(projectInitDTO.getPassword())) {
+                // mybatis-plus-generator生成do及相应的基础代码
+                MybatisPlusGenerator.generator(projectInitDTO, projectInitDTO.getPath());
+            }
         } catch (Exception e) {
             logger.error("project generator error: ", e);
             throw new InitializerException(InitializerErrorCode.GENERATION_ERROR.getErrorCode(), InitializerErrorCode.GENERATION_ERROR.getErrorCode());
