@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>项目生成工具</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/axios.min.js"></script>
 
     <style>
         html,
@@ -268,50 +268,47 @@
     }
 
     // 校验database连接
-    function checkDatabase() {
-        var positionIptProjectName = document.getElementById('databaseLink');
-        var spanDatabase = document.getElementById('spanDatabase');
-        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-            spanDatabase.innerHTML = '请输入数据库连接'.fontcolor("#7575ef");
-            return false;
-        }
-        spanDatabase.innerHTML = '';
-        return true;
-    }
-
-    // 校验database-username
-    function checkDatabaseUsername() {
-        var positionIptProjectName = document.getElementById('username');
-        var spanUsername = document.getElementById('spanUsername');
-        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-            spanUsername.innerHTML = '请输入用户名'.fontcolor("#7575ef");
-            return false;
-        }
-        spanUsername.innerHTML = '';
-        return true;
-    }
-
-    // 校验database-password
-    function checkDatabasePassword() {
-        var positionIptProjectName = document.getElementById('password');
-        var spanPassword = document.getElementById('spanPassword');
-        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-            spanPassword.innerHTML = '请输入密码'.fontcolor("#7575ef");
-            return false;
-        }
-        spanPassword.innerHTML = '';
-        return true;
-    }
+    // function checkDatabase() {
+    //     var positionIptProjectName = document.getElementById('databaseLink');
+    //     var spanDatabase = document.getElementById('spanDatabase');
+    //     if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+    //         spanDatabase.innerHTML = '请输入数据库连接'.fontcolor("#7575ef");
+    //         return false;
+    //     }
+    //     spanDatabase.innerHTML = '';
+    //     return true;
+    // }
+    //
+    // // 校验database-username
+    // function checkDatabaseUsername() {
+    //     var positionIptProjectName = document.getElementById('username');
+    //     var spanUsername = document.getElementById('spanUsername');
+    //     if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+    //         spanUsername.innerHTML = '请输入用户名'.fontcolor("#7575ef");
+    //         return false;
+    //     }
+    //     spanUsername.innerHTML = '';
+    //     return true;
+    // }
+    //
+    // // 校验database-password
+    // function checkDatabasePassword() {
+    //     var positionIptProjectName = document.getElementById('password');
+    //     var spanPassword = document.getElementById('spanPassword');
+    //     if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
+    //         spanPassword.innerHTML = '请输入密码'.fontcolor("#7575ef");
+    //         return false;
+    //     }
+    //     spanPassword.innerHTML = '';
+    //     return true;
+    // }
 
     // 验证表单数据
     function onDownload() {
         let groupIdCheck = checkGroupId();
         let projectNameCheck = checkProjectName();
-        let databaseLinkCheck = checkDatabase();
-        let databaseUsernameCheck = checkDatabaseUsername();
-        let databasePasswordCheck = checkDatabasePassword();
 
-        if (!groupIdCheck || !projectNameCheck || !databaseLinkCheck || !databaseUsernameCheck || !databasePasswordCheck) {
+        if (!groupIdCheck || !projectNameCheck) {
             return false;
         }
 
