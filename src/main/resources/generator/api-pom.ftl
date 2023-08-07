@@ -11,6 +11,8 @@
 
     <artifactId>${artifactId}-api</artifactId>
 
+    <biz-service-impl.version>1.0-SNAPSHOT</biz-service-impl.version>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -20,7 +22,7 @@
         <dependency>
             <groupId>com.deepinnet</groupId>
             <artifactId>${artifactId}-biz-service-impl</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${r"${biz-service-impl.version}"}</version>
         </dependency>
     </dependencies>
 
