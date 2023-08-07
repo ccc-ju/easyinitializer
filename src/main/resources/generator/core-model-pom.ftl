@@ -28,11 +28,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.deepinnet</groupId>
-            <artifactId>${artifactId}-common-service-facade</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
         </dependency>
