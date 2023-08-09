@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: esppolicycore
+    name: ${artifactId}
   # nacos
   cloud:
     nacos:

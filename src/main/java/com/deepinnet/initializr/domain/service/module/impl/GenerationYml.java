@@ -34,7 +34,7 @@ public class GenerationYml extends BaseModule {
         );
 
         // 写入文件
-        super.writeFile(bootstrap, "bootstrap-yml.ftl", null);
+        super.writeFile(bootstrap, "bootstrap-yml.ftl", projectInfo);
 
         logger.info("创建配置文件 bootstrap.yml {}", bootstrap.getPath());
 
