@@ -11,7 +11,9 @@
 
     <artifactId>${artifactId}-api</artifactId>
 
-    <biz-service-impl.version>1.0-SNAPSHOT</biz-service-impl.version>
+    <properties>
+        <biz-service-impl.version>1.0-SNAPSHOT</biz-service-impl.version>
+    </properties>
 
     <dependencies>
         <dependency>
