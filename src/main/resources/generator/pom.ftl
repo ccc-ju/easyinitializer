@@ -47,6 +47,7 @@
         <knife.version>3.0.3</knife.version>
         <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
         <jasypt.version>3.0.5</jasypt.version>
+        <mapstruct.version>1.5.0.Final</mapstruct.version>
 
         <curator.version>2.6.0</curator.version>
         <perf4j.version>0.9.16</perf4j.version>
@@ -343,7 +344,7 @@
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
+                            <version>${r"${mapstruct.version}"}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
