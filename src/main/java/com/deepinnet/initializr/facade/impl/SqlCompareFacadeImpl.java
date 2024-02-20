@@ -2,6 +2,7 @@ package com.deepinnet.initializr.facade.impl;
 
 import cn.hutool.core.collection.ListUtil;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
+import com.deepinnet.initializr.dto.SqlCompareConnectionDTO;
 import com.deepinnet.initializr.dto.SqlConnectionDTO;
 import com.deepinnet.initializr.facade.SqlCompareFacade;
 import com.deepinnet.initializr.infrastructure.utils.DataBaseUtil;
@@ -36,6 +37,23 @@ public class SqlCompareFacadeImpl implements SqlCompareFacade {
         String[] tableNames = DataBaseUtil.getTableNames(sqlConnection.getDatabaseLink(), sqlConnection.getUsername(), sqlConnection.getPassword());
 
         return ListUtil.of(tableNames);
+    }
+
+    @Override
+    public String compareTable(SqlCompareConnectionDTO dto) {
+        checkCompareTableParams(dto);
+
+        return null;
+    }
+
+    private static void checkCompareTableParams(SqlCompareConnectionDTO dto) {
+        Assert.notNull(dto, "sqlConnections不能为空");
+        Assert.notNull(dto.getSourceConnection(), "sourceConnection不能为空");
+        Assert.notNull(dto.getTargetConnection(), "targetConnection不能为空");
+        checkParams(dto.getSourceConnection());
+        checkParams(dto.getTargetConnection());
+        Assert.hasText(dto.getSourceConnection().getTableName(), "source tableName不能为空");
+        Assert.hasText(dto.getTargetConnection().getTableName(), "target tableName不能为空");
     }
 
     private ProjectInitDTO buildParams(SqlConnectionDTO sqlConnection) {
