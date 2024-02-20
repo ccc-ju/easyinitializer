@@ -2,6 +2,8 @@ package com.deepinnet.initializr.test;
 
 import com.deepinnet.initializr.application.IProjectGenerator;
 import com.deepinnet.initializr.domain.model.ProjectInfo;
+import com.deepinnet.initializr.dto.SqlConnectionDTO;
+import com.deepinnet.initializr.facade.SqlCompareFacade;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 项目生成测试类
@@ -18,10 +21,13 @@ import javax.annotation.Resource;
 @SpringBootTest
 public class ApiTest {
 
-    private final Logger log = LoggerFactory.getLogger(ApiTest.class);
+    private final Logger logger = LoggerFactory.getLogger(ApiTest.class);
 
     @Resource
     private IProjectGenerator iProjectGenerator;
+
+    @Resource
+    private SqlCompareFacade sqlCompareFacade;
 
     @Test
     public void test_IProjectGenerator() throws Exception {
@@ -35,6 +41,17 @@ public class ApiTest {
         );
 
         iProjectGenerator.generator(projectInfo);
+    }
+
+    @Test
+    public void getTablesTest(){
+        SqlConnectionDTO sqlConnectionDTO = new SqlConnectionDTO();
+        sqlConnectionDTO.setDatabaseLink("rm-bp193v7i846v01k442o.mysql.rds.aliyuncs.com:3306/tp_order-env-dev");
+        sqlConnectionDTO.setUsername("tp_deepinnet_dev");
+        sqlConnectionDTO.setPassword("B%dkLnXRt@nWjeUA");
+
+        List<String> tables = sqlCompareFacade.getTables(sqlConnectionDTO);
+        logger.info("tables: {}", tables);
     }
 
 }
