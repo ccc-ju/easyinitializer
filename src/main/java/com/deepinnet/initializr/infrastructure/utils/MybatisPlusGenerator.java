@@ -172,7 +172,8 @@ public class MybatisPlusGenerator {
     public static void generator(ProjectInitDTO projectInitDTO, String path) throws ClassNotFoundException {
         // 不手动加载数据库驱动会导致'No suitable driver found for jdbc:mysql://xxx:3306/xxx'异常
         Class.forName("com.mysql.cj.jdbc.Driver");
-        tableNames = getTableNames(projectInitDTO);
+        // tableNames = getTableNames(projectInitDTO);
+        tableNames = DataBaseUtil.getTableNames(projectInitDTO.getDatabaseLink(), projectInitDTO.getUsername(), projectInitDTO.getPassword());
         projectName = projectInitDTO.getProjectName();
         url = "jdbc:mysql://" + projectInitDTO.getDatabaseLink() + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai";
         username = projectInitDTO.getUsername();

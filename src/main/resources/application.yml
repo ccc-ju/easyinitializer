@@ -1,2 +1,8 @@
 server:
   port: 8080
+
+spring:
+  # 防止 Knife4j 2.0及以上版本访问报错
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
