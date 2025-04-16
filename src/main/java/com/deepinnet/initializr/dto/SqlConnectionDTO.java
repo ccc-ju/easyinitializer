@@ -20,6 +20,11 @@ public class SqlConnectionDTO implements Serializable {
     private static final long serialVersionUID = -1355452908118160009L;
 
     /**
+     * 数据库类型 mysql; postgres
+     */
+    private String dbType;
+
+    /**
      * 数据库连接
      */
     private String databaseLink;

@@ -1,6 +1,7 @@
 package com.deepinnet.initializr.facade.impl;
 
 import cn.hutool.core.collection.ListUtil;
+import com.deepinnet.initializr.domain.enums.DbTypeEnum;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
 import com.deepinnet.initializr.dto.SqlCompareConnectionDTO;
 import com.deepinnet.initializr.dto.SqlConnectionDTO;
@@ -34,7 +35,7 @@ public class SqlCompareFacadeImpl implements SqlCompareFacade {
     public List<String> getTables(SqlConnectionDTO sqlConnection) {
         checkParams(sqlConnection);
 
-        String[] tableNames = DataBaseUtil.getTableNames(sqlConnection.getDatabaseLink(), sqlConnection.getUsername(), sqlConnection.getPassword());
+        String[] tableNames = DataBaseUtil.getTableNames(sqlConnection.getDatabaseLink(), sqlConnection.getUsername(), sqlConnection.getPassword(), sqlConnection.getDbType());
 
         return ListUtil.of(tableNames);
     }
@@ -66,8 +67,11 @@ public class SqlCompareFacadeImpl implements SqlCompareFacade {
 
     private static void checkParams(SqlConnectionDTO sqlConnection) {
         Assert.notNull(sqlConnection, "sqlConnection is null");
+        Assert.hasText(sqlConnection.getDbType(), "dbType is null");
         Assert.hasText(sqlConnection.getDatabaseLink(), "databaseLink is null");
         Assert.hasText(sqlConnection.getUsername(), "database username is null");
         Assert.hasText(sqlConnection.getPassword(), "database password is null");
+
+        sqlConnection.setDbType(DbTypeEnum.getDbTypeEnum(sqlConnection.getDbType()).getType());
     }
 }

@@ -23,7 +23,7 @@ public class InitializerException extends RuntimeException {
     protected Map<String, Object> parameters;
 
     /**
-     * 保险异常构造函数。
+     * 异常构造函数。
      *
      * @param espErrorCode 内部错误码
      */
@@ -32,7 +32,7 @@ public class InitializerException extends RuntimeException {
     }
 
     /**
-     * 保险异常构造函数。
+     * 异常构造函数。
      *
      * <p>保险内部异常时使用
      *

@@ -25,13 +25,13 @@ public class DataBaseUtil {
     public static void main(String[] args) {
         SqlCompareConnectionDTO sqlCompareConnectionDTO = new SqlCompareConnectionDTO();
         SqlConnectionDTO source = new SqlConnectionDTO();
-        source.setDatabaseLink("rm-bp193v7i846v01k442o.mysql.rds.aliyuncs.com:3306/tp_order-env-dev");
+        source.setDatabaseLink("localhost:3306/tp_order-env-dev");
         source.setUsername("tp_deepinnet_dev");
         source.setPassword("B%dkLnXRt@nWjeUA");
         source.setTableName("tp_order");
 
         SqlConnectionDTO target = new SqlConnectionDTO();
-        target.setDatabaseLink("rm-bp193v7i846v01k442o.mysql.rds.aliyuncs.com:3306/tp_order-env-test");
+        target.setDatabaseLink("localhost:3306/tp_order-env-test");
         target.setUsername("tp_deepinnet_test");
         target.setPassword("20230424MnfFfdWZsyH2KvuF");
         target.setTableName("tp_order");
@@ -132,6 +132,49 @@ public class DataBaseUtil {
         List<String> tableList = new ArrayList<>();
         try {
             String url = "jdbc:mysql://" + databaseLink + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai";
+            connection = DriverManager.getConnection(url, username, password);
+            // 拿数据库元数据
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            // 获取所有表名
+            resultSet = metaData.getTables(dataBaseName, null, null, new String[]{"TABLE"});
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                tableList.add(tableName);
+            }
+            return ArrayUtil.toArray(tableList, String.class);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InitializerException("0005", "数据库连接异常");
+        } finally {
+            try {
+                if (ObjectUtil.isNotNull(resultSet)) {
+                    resultSet.close();
+                }
+                if (ObjectUtil.isNotNull(connection)) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    /**
+     * 获取数据库表名
+     * @param databaseLink 数据库连接
+     * @param username 用户名
+     * @param password 密码
+     * @return 数据库表名
+     */
+    public static String[] getTableNames(String databaseLink, String username, String password, String dbType) {
+        String dataBaseName = databaseLink.substring(databaseLink.lastIndexOf("/") + 1);
+        ResultSet resultSet = null;
+        Connection connection = null;
+        List<String> tableList = new ArrayList<>();
+        try {
+            String url = "jdbc:" + dbType +"://" + databaseLink;
             connection = DriverManager.getConnection(url, username, password);
             // 拿数据库元数据
             DatabaseMetaData metaData = connection.getMetaData();
