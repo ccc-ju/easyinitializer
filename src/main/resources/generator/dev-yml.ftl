@@ -33,14 +33,17 @@ spring:
         enabled: true
         url-pattern: /druid/*
 
+<#if enableDubbo>
 # dubbo
 dubbo:
   application:
     name: ${r"${spring.application.name}"}
+<#if enableNacos>
   registry:
     address: nacos://192.168.3.200:8848
     parameters:
       namespace: ${r"${spring.cloud.nacos.discovery.namespace}"}
+</#if>
   protocol:
     port: 20880
   provider:
@@ -51,6 +54,7 @@ dubbo:
     timeout: 3000
     retries: 0
     check: false
+</#if>
 
 mybatis-plus:
   mapper-locations: classpath*:mybatis/mapper/*Mapper.xml

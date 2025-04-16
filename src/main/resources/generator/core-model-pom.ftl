@@ -27,10 +27,12 @@
             <artifactId>${artifactId}-common-service-integration</artifactId>
         </dependency>
 
+        <#if enableDubbo>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
         </dependency>
+        </#if>
 
         <#--<dependency>
             <groupId>com.deepinnet</groupId>

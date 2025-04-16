@@ -22,7 +22,9 @@ public class GenerationApplication extends BaseModule {
         ApplicationInfo applicationInfo = new ApplicationInfo(
                 projectInfo.getGroupId(),
                 applicationJavaName.toString(),
-                projectInfo.getArtifactId()
+                projectInfo.getArtifactId(),
+                projectInfo.getEnableNacos(),
+                projectInfo.getEnableDubbo()
         );
 
         String packagePath = applicationInfo.getPackageName().replace(".", "/") + "/";

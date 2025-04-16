@@ -255,6 +255,33 @@
                 padding: 20px 15px;
             }
         }
+        
+        /* 自定义复选框样式 */
+        .dependency-option {
+            position: relative;
+            padding: 8px 12px;
+            background-color: #f5f9fd;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .dependency-option:hover {
+            background-color: #e6f2fd;
+        }
+        
+        .dependency-option input[type="checkbox"] {
+            cursor: pointer;
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+        
+        .dependency-option label {
+            cursor: pointer;
+        }
+        
+        .dependency-option.disabled {
+            opacity: 0.6;
+        }
     </style>
 </head>
 
@@ -305,6 +332,7 @@
                     <label for="databaseLink">数据库连接</label>
                     <input type="text" id="databaseLink" class="form-control" placeholder="例如：127.0.0.1:3306/your-database-name">
                     <small class="error-text" id="databaseLinkError"></small>
+                    <small style="color: #f39c12; display: block; margin-top: 5px;">注意：系统将使用默认值，如需自定义请填写完整的数据库信息</small>
                 </div>
                 
                 <div class="form-row">
@@ -321,6 +349,23 @@
                             <input type="password" id="password" class="form-control" placeholder="请输入密码">
                             <small class="error-text" id="passwordError"></small>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>依赖选择</label>
+                    <div class="dependency-options" style="margin-top: 10px; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                            <div class="dependency-option">
+                                <input type="checkbox" id="enableNacos" checked>
+                                <label for="enableNacos" style="display: inline; margin-left: 5px; font-weight: normal;">启用 Nacos 配置中心</label>
+                            </div>
+                            <div class="dependency-option">
+                                <input type="checkbox" id="enableDubbo" checked>
+                                <label for="enableDubbo" style="display: inline; margin-left: 5px; font-weight: normal;">启用 Dubbo 服务框架</label>
+                            </div>
+                        </div>
+                        <small style="color: #666; display: block; margin-top: 10px;">未选中的依赖将不会在生成的项目中添加相关配置</small>
                     </div>
                 </div>
                 
@@ -351,6 +396,8 @@
             const databaseLinkInput = document.getElementById('databaseLink');
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
+            const enableNacosInput = document.getElementById('enableNacos');
+            const enableDubboInput = document.getElementById('enableDubbo');
             const loadingOverlay = document.getElementById('loadingOverlay');
             
             // Error elements
@@ -380,16 +427,15 @@
                     groupId: groupIdInput.value.trim(),
                     projectName: projectNameInput.value.trim(),
                     version: versionInput.value.trim(),
-                    description: descriptionInput.value.trim()
+                    description: descriptionInput.value.trim(),
+                    // 始终提供数据库相关信息，如果用户未填写则使用默认值
+                    databaseLink: databaseLinkInput.value.trim(),
+                    username: usernameInput.value.trim(),
+                    password: passwordInput.value.trim(),
+                    // 添加依赖选择
+                    enableNacos: enableNacosInput.checked,
+                    enableDubbo: enableDubboInput.checked
                 };
-                
-                // 如果填写了数据库连接，则添加数据库相关信息
-                const databaseLink = databaseLinkInput.value.trim();
-                if (databaseLink) {
-                    formData.databaseLink = databaseLink;
-                    formData.username = usernameInput.value.trim();
-                    formData.password = passwordInput.value.trim();
-                }
                 
                 // Set larger timeout for project generation
                 axios.defaults.timeout = 300000;
@@ -463,6 +509,29 @@
                 if (value.includes('.')) {
                     const parts = value.split('.');
                     projectNameInput.value = parts[parts.length - 1];
+                }
+            });
+            
+            // 处理依赖项之间的关联关系
+            enableNacosInput.addEventListener('change', function() {
+                // 如果禁用了Nacos，检查是否需要处理相关依赖项
+                if (!this.checked) {
+                    // 提示用户Nacos是Dubbo的注册中心
+                    if (enableDubboInput.checked) {
+                        if (confirm('Nacos通常作为Dubbo的注册中心，禁用Nacos可能会影响Dubbo的功能。您确定要禁用Nacos吗？')) {
+                            // 用户确认禁用Nacos
+                        } else {
+                            // 用户取消，恢复选中状态
+                            this.checked = true;
+                        }
+                    }
+                }
+            });
+            
+            // 如果启用Dubbo但禁用了Nacos，提醒用户
+            enableDubboInput.addEventListener('change', function() {
+                if (this.checked && !enableNacosInput.checked) {
+                    showToast('warning', '您已启用Dubbo但禁用了Nacos。Dubbo通常需要Nacos作为注册中心，请确认配置。');
                 }
             });
             

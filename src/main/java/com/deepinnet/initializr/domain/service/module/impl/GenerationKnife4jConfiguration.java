@@ -22,7 +22,9 @@ public class GenerationKnife4jConfiguration extends BaseModule {
         ApplicationInfo applicationInfo = new ApplicationInfo(
                 projectInfo.getGroupId(),
                 null,
-                projectInfo.getArtifactId()
+                projectInfo.getArtifactId(),
+                projectInfo.getEnableNacos(),
+                projectInfo.getEnableDubbo()
         );
 
         String packagePath = applicationInfo.getPackageName().replace(".", "/") + "/";

@@ -33,7 +33,9 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <rocketmq.version>2.2.2</rocketmq.version>
         <jedis.verision>3.6.3</jedis.verision>
+        <#if enableDubbo>
         <dubbo.version>3.1.4</dubbo.version>
+        </#if>
         <schedulerx2.version>1.7.9</schedulerx2.version>
         <schedulerx-plugin-kubernetes>1.0.1</schedulerx-plugin-kubernetes>
 
@@ -103,6 +105,7 @@
             </dependency>
 
             <!--中间件相关依赖-->
+            <#if enableDubbo>
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-bom</artifactId>
@@ -110,6 +113,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            </#if>
 
             <dependency>
                 <groupId>com.deepinnet</groupId>
@@ -189,18 +193,22 @@
                 <version>${r"${hutool.version}"}</version>
             </dependency>
 
+            <#if enableDubbo>
             <!--dubbo-->
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo</artifactId>
                 <version>${r"${dubbo.version}"}</version>
             </dependency>
+            </#if>
 
+            <#if enableNacos>
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-registry-nacos</artifactId>
                 <version>${r"${dubbo.version}"}</version>
             </dependency>
+            </#if>
 
             <dependency>
                 <groupId>org.perf4j</groupId>

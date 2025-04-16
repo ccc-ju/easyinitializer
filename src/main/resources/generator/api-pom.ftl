@@ -26,6 +26,11 @@
             <artifactId>${artifactId}-biz-service-impl</artifactId>
             <version>${r"${biz-service-impl.version}"}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

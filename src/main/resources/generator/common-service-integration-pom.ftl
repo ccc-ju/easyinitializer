@@ -12,10 +12,12 @@
     <artifactId>${artifactId}-common-service-integration</artifactId>
 
     <dependencies>
+        <#if enableDubbo>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
         </dependency>
+        </#if>
     </dependencies>
 
 </project>

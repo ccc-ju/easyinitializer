@@ -1,6 +1,9 @@
 package com.deepinnet.initializr.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -10,6 +13,9 @@ import java.io.Serializable;
  */
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProjectInfo implements Serializable {
 
     private static final long serialVersionUID = -8967702842381232912L;
@@ -30,25 +36,23 @@ public class ProjectInfo implements Serializable {
 
     private String password;
 
-    public ProjectInfo() {
-    }
+    /**
+     * 是否启用nacos
+     */
+    private Boolean enableNacos;
 
-    public ProjectInfo(String groupId, String artifactId, String version, String name, String description) {
+    /**
+     * 是否启用Dubbo服务框架
+     */
+    private Boolean enableDubbo;
+
+    public ProjectInfo(String groupId, String artifactId, String version, String name, String description, Boolean enableNacos, Boolean enableDubbo) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.name = name;
         this.description = description;
-    }
-
-    public ProjectInfo(String groupId, String artifactId, String version, String name, String description, String databaseLink, String username, String password) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
-        this.name = name;
-        this.description = description;
-        this.databaseLink = databaseLink;
-        this.username = username;
-        this.password = password;
+        this.enableNacos = enableNacos;
+        this.enableDubbo = enableDubbo;
     }
 }

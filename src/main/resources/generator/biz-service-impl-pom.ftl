@@ -54,10 +54,12 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
 
+        <#if enableDubbo>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
         </dependency>
+        </#if>
 
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>

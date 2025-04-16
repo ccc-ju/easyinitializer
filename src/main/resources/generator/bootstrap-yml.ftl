@@ -4,6 +4,7 @@ server:
 spring:
   application:
     name: ${artifactId}
+<#if enableNacos>
   # nacos
   cloud:
     nacos:
@@ -21,3 +22,4 @@ spring:
         namespace: ${r"${spring.cloud.nacos.discovery.namespace}"}
         name: ${r"${spring.application.name}"}
         file-extension: properties
+</#if>

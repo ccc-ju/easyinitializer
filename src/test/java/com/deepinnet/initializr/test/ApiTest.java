@@ -37,7 +37,9 @@ public class ApiTest {
                 "espjiaju",
                 "1.0.0-SNAPSHOT",
                 "espjiaju",
-                "Demo project for Spring Boot"
+                "Demo project for Spring Boot",
+                false,
+                false
         );
 
         iProjectGenerator.generator(projectInfo);

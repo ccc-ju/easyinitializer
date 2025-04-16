@@ -29,7 +29,7 @@ public class GenerationApiPackageInfo extends BaseModule {
 
         // 写入文件
         super.writeFile(new File(projectsRoot + "/src/main/java/" + packagePath + "controller/",
-                "DemoController.java"), "controller.ftl", new ApplicationInfo(packageName + ".controller", null, projectInfo.getArtifactId()));
+                "DemoController.java"), "controller.ftl", new ApplicationInfo(packageName + ".controller", null, projectInfo.getArtifactId(), projectInfo.getEnableNacos(), projectInfo.getEnableDubbo()));
 
 
         logger.info("创建controller分层和描述文件 {}", "controller.java");

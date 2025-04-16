@@ -60,6 +60,7 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
 
+        <#if enableNacos>
         <!--nacos-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -70,17 +71,22 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
+        </#if>
 
+        <#if enableDubbo>
         <!--dubbo-->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
         </dependency>
+        </#if>
 
+        <#if enableNacos>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-registry-nacos</artifactId>
         </dependency>
+        </#if>
 
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>

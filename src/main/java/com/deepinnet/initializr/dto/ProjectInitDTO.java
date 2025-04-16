@@ -60,4 +60,14 @@ public class ProjectInitDTO implements Serializable {
      */
     private String path;
 
+    /**
+     * 是否启用Nacos配置中心
+     */
+    private Boolean enableNacos = Boolean.TRUE;
+
+    /**
+     * 是否启用Dubbo服务框架
+     */
+    private Boolean enableDubbo = Boolean.TRUE;
+
 }
