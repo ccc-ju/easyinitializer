@@ -1,5 +1,6 @@
 package com.deepinnet.initializr.converter;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.deepinnet.initializr.domain.model.ProjectInfo;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
@@ -22,6 +23,7 @@ public class ProjectInfoConverter {
                 .artifactId(projectInitDTO.getProjectName())
                 .version(version)
                 .description(projectInitDTO.getDescription())
+                .dbType(ObjectUtil.isNull(projectInitDTO.getDbType()) ? null : projectInitDTO.getDbType().getType())
                 .databaseLink(projectInitDTO.getDatabaseLink())
                 .username(projectInitDTO.getUsername())
                 .password(projectInitDTO.getPassword())

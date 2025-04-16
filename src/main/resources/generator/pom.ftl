@@ -28,10 +28,16 @@
         <spring-data-redis.version>2.6.0</spring-data-redis.version>
 
         <!--中间件相关依赖-->
+        <#if dbType?? && dbType == "mysql">
         <mysql.version>8.0.28</mysql.version>
         <druid.version>1.2.17</druid.version>
+        </#if>
+        <#if dbType?? && dbType == "postgresql">
+        <postgresql.version>42.3.7</postgresql.version>
+        </#if>
+        <#if dbType?? && dbType != "">
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
-        <rocketmq.version>2.2.2</rocketmq.version>
+        </#if>
         <jedis.verision>3.6.3</jedis.verision>
         <#if enableDubbo>
         <dubbo.version>3.1.4</dubbo.version>
@@ -169,6 +175,7 @@
                 <version>${r"${jasypt.version}"}</version>
             </dependency>
 
+            <#if dbType?? && dbType == "mysql">
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
@@ -180,12 +187,23 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${r"${druid.version}"}</version>
             </dependency>
+            </#if>
 
+            <#if dbType?? && dbType == "postgresql">
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${r"${postgresql.version}"}</version>
+            </dependency>
+            </#if>
+
+            <#if dbType?? && dbType != "">
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${r"${mybatis-plus.version}"}</version>
             </dependency>
+            </#if>
 
             <dependency>
                 <groupId>cn.hutool</groupId>
@@ -233,12 +251,6 @@
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
                 <version>${r"${aliyun-oss.version}"}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.rocketmq</groupId>
-                <artifactId>rocketmq-spring-boot-starter</artifactId>
-                <version>${r"${rocketmq.version}"}</version>
             </dependency>
 
             <!-- knife -->

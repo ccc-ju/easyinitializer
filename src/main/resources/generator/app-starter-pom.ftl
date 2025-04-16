@@ -33,6 +33,7 @@
             <scope>test</scope>
         </dependency>
 
+        <#if dbType?? && dbType == "mysql">
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -42,6 +43,14 @@
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
+        </#if>
+
+        <#if dbType?? && dbType == "postgresql">
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        </#if>
 
         <dependency>
             <groupId>com.github.jsonzou</groupId>
@@ -55,10 +64,12 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
+        <#if dbType?? && dbType != "">
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
+        </#if>
 
         <#if enableNacos>
         <!--nacos-->

@@ -11,7 +11,9 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <#if dbType?? && dbType != "">
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        </#if>
     </properties>
 
     <dependencies>
@@ -43,11 +45,13 @@
             <version>2.6.11</version>
         </dependency>
 
+        <#if dbType?? && dbType != "">
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>${r"${mybatis-plus.version}"}</version>
         </dependency>
+        </#if>
     </dependencies>
 
     <build>

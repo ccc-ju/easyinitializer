@@ -53,8 +53,8 @@ public class DataBaseUtil {
         StringBuilder sb = new StringBuilder();
 
         // 获取并比较列
-        Map<String, String> sourceTableColumns = getTableColumns(sourceConnection.getDatabaseLink(), sourceConnection.getUsername(), sourceConnection.getPassword(), sourceConnection.getTableName());
-        Map<String, String> targetTableColumns = getTableColumns(targetConnection.getDatabaseLink(), targetConnection.getUsername(), targetConnection.getPassword(), targetConnection.getTableName());
+        Map<String, String> sourceTableColumns = getTableColumns(sourceConnection.getDatabaseLink(), sourceConnection.getUsername(), sourceConnection.getPassword(), sourceConnection.getTableName(), "mysql");
+        Map<String, String> targetTableColumns = getTableColumns(targetConnection.getDatabaseLink(), targetConnection.getUsername(), targetConnection.getPassword(), targetConnection.getTableName(), "mysql");
         sb.append(compareColumns(dto.getSourceConnection().getTableName(), dto.getTargetConnection().getTableName(), sourceTableColumns, targetTableColumns));
 
         // 获取并比较索引
@@ -209,16 +209,30 @@ public class DataBaseUtil {
      * @param databaseLink 数据库连接
      * @param username 用户名
      * @param password 密码
+     * @param tableName 表名
+     * @param dbType 数据库类型
      * @return 数据库表名
      */
-    public static Map<String, String> getTableColumns(String databaseLink, String username, String password, String tableName) {
+    public static Map<String, String> getTableColumns(String databaseLink, String username, String password, String tableName, String dbType) {
         String dataBaseName = databaseLink.substring(databaseLink.lastIndexOf("/") + 1);
         ResultSet resultSet = null;
         Connection connection = null;
         List<String> tableList = new ArrayList<>();
         try {
-            String url = "jdbc:mysql://" + databaseLink + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai";
+            String url;
+            if ("mysql".equals(dbType)) {
+                url = "jdbc:mysql://" + databaseLink + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai";
+            } else {
+                // PostgreSQL特殊处理
+                url = "jdbc:postgresql://" + databaseLink + "?currentSchema=public&reWriteBatchedInserts=true&userTimezone=Asia/Shanghai";
+            }
             connection = DriverManager.getConnection(url, username, password);
+            
+            if ("postgresql".equals(dbType)) {
+                // PostgreSQL特殊处理，避免重复列问题
+                return getPostgresColumns(connection, tableName);
+            }
+            
             // 拿数据库元数据
             DatabaseMetaData metaData = connection.getMetaData();
 
@@ -242,6 +256,28 @@ public class DataBaseUtil {
             }
 
         }
+    }
+    
+    /**
+     * PostgreSQL特定的获取列方法，避免返回重复列
+     */
+    private static Map<String, String> getPostgresColumns(Connection connection, String tableName) throws SQLException {
+        Map<String, String> columns = new HashMap<>();
+        String sql = "SELECT column_name, data_type FROM information_schema.columns " +
+                     "WHERE table_schema = 'public' AND table_name = ? " +
+                     "ORDER BY ordinal_position";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, tableName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String columnName = rs.getString("column_name");
+                    String columnType = rs.getString("data_type");
+                    columns.put(columnName, columnType);
+                }
+            }
+        }
+        return columns;
     }
 
     /**
@@ -307,6 +343,13 @@ public class DataBaseUtil {
             }
         }
         return columns;
+    }
+
+    /**
+     * 保留原来的方法以向后兼容
+     */
+    public static Map<String, String> getTableColumns(String databaseLink, String username, String password, String tableName) {
+        return getTableColumns(databaseLink, username, password, tableName, "mysql");
     }
 
 }

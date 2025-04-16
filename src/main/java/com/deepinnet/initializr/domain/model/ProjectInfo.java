@@ -30,6 +30,8 @@ public class ProjectInfo implements Serializable {
 
     private String description;
 
+    private String dbType;
+
     private String databaseLink;
 
     private String username;

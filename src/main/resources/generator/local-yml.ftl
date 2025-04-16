@@ -3,6 +3,18 @@ spring:
     host: 192.168.3.200
     port: 6379
     password: ENC(ao+A54rgdnsZ/wIydpBlnxYqM34u5B4O)
+<#if dbType?? && dbType == "postgresql">
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:postgresql://${databaseLink}?currentSchema=public&reWriteBatchedInserts=true&userTimezone=Asia/Shanghai
+          username: ${username}
+          password: ${password}
+          driver-class-name: org.postgresql.Driver
+</#if>
+<#if dbType?? && dbType == "mysql">
   #=======druid数据源配置=======
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -32,7 +44,9 @@ spring:
       stat-view-servlet:
         enabled: true
         url-pattern: /druid/*
+</#if>
 
+<#if enableDubbo>
 # dubbo
 dubbo:
   application:
@@ -51,6 +65,7 @@ dubbo:
     timeout: 3000
     retries: 0
     check: false
+</#if>
 
 mybatis-plus:
   mapper-locations: classpath*:mybatis/mapper/*Mapper.xml

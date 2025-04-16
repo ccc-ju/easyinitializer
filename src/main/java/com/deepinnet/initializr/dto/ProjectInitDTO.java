@@ -1,5 +1,6 @@
 package com.deepinnet.initializr.dto;
 
+import com.deepinnet.initializr.domain.enums.DbTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,6 +40,11 @@ public class ProjectInitDTO implements Serializable {
      * 项目描述
      */
     private String description;
+
+    /**
+     * 数据库类型
+     */
+    private DbTypeEnum dbType;
 
     /**
      * 数据库连接

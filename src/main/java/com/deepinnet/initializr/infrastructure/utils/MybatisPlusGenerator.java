@@ -3,6 +3,8 @@ package com.deepinnet.initializr.infrastructure.utils;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.ConstVal;
@@ -10,6 +12,7 @@ import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.deepinnet.initializr.domain.enums.DbTypeEnum;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
 import com.deepinnet.initializr.exception.InitializerException;
 
@@ -170,139 +173,176 @@ public class MybatisPlusGenerator {
     }
 
     public static void generator(ProjectInitDTO projectInitDTO, String path) throws ClassNotFoundException {
+        String url;
+        String schema = null;
         // 不手动加载数据库驱动会导致'No suitable driver found for jdbc:mysql://xxx:3306/xxx'异常
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        // tableNames = getTableNames(projectInitDTO);
-        tableNames = DataBaseUtil.getTableNames(projectInitDTO.getDatabaseLink(), projectInitDTO.getUsername(), projectInitDTO.getPassword());
+        if (StrUtil.equals(projectInitDTO.getDbType().getCode(), DbTypeEnum.MYSQL.getCode())) {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            url = "jdbc:mysql://" + projectInitDTO.getDatabaseLink() + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai";
+        } else {
+            Class.forName("org.postgresql.Driver");
+            // 显式指定currentSchema，解决字段重复问题
+            url = "jdbc:postgresql://" + projectInitDTO.getDatabaseLink() + "?currentSchema=public&reWriteBatchedInserts=true&userTimezone=Asia/Shanghai";
+            
+            // 检查数据库连接以修复潜在的元数据问题
+            try {
+                Connection conn = DriverManager.getConnection(url, projectInitDTO.getUsername(), projectInitDTO.getPassword());
+                // 设置schema搜索路径仅为public，避免重复获取列
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute("SET search_path TO public");
+                }
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // 获取表名
+        tableNames = DataBaseUtil.getTableNames(projectInitDTO.getDatabaseLink(), projectInitDTO.getUsername(), projectInitDTO.getPassword(), projectInitDTO.getDbType().getType());
+        
         projectName = projectInitDTO.getProjectName();
-        url = "jdbc:mysql://" + projectInitDTO.getDatabaseLink() + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai";
+
         username = projectInitDTO.getUsername();
         password = projectInitDTO.getPassword();
         outputDir = path;
         parentPackageName = projectInitDTO.getGroupId();
 
         // 生成器
-        FastAutoGenerator.create(url, username, password)
-                // 全局配置
-                .globalConfig(builder -> builder
-                        // 禁止打开输出目录
-                        .disableOpenDir()
-                        // 指定输出目录
-                        .outputDir(outputDir)
-                        // 设置作者
-                        .author(author)
-                        // 时间策略
-                        .dateType(dateType)
-                        // 注释日期
-                        .commentDate(commentDate)
-                        // 开启 swagger 模式
-                        //.enableSwagger()
-                        .build())
-                // 包配置
-                .packageConfig(builder -> builder
-                        // 父类包名
-                        .parent(parentPackageName)
-                        // Controller 包名
-                        .controller(controllerPackageName)
-                        // Service 包名
-                        .service(servicePackageName)
-                        // ServiceImpl 包名
-                        .serviceImpl(serviceImplPackageName)
-                        // Mapper 包名
-                        .mapper(mapperPackageName)
-                        // Entity 包名
-                        .entity(entityPackageName)
-                        // 设置mapperXml生成路径
-                        .pathInfo(pathInfo(projectName, projectInitDTO.getGroupId()))
-                        .build())
-                // 模板配置
-                .templateConfig(builder -> builder
-                        .disable(disableTemplateType)
-                        .build()
-                )
-                // 策略配置
-                .strategyConfig(builder -> builder
-                        // 设置需要生成的表名
-                        .addInclude(tableNames)
-                        // 设置过滤表名前缀
-                        .addTablePrefix(tablePrefix)
-                        // 设置过滤表名后缀
-                        .addTableSuffix(tableSuffix)
-                        // 设置过滤表字段前缀
-                        .addFieldPrefix(fieldPrefix)
-                        // 设置过滤表字段后缀
-                        .addFieldSuffix(fieldSuffix)
+        FastAutoGenerator generator = FastAutoGenerator.create(url, username, password);
+        
+        // 全局配置
+        generator.globalConfig(builder -> builder
+                // 禁止打开输出目录
+                .disableOpenDir()
+                // 指定输出目录
+                .outputDir(outputDir)
+                // 设置作者
+                .author(author)
+                // 时间策略
+                .dateType(dateType)
+                // 注释日期
+                .commentDate(commentDate)
+                // 开启 swagger 模式
+                //.enableSwagger()
+                .build());
+                
+        // 包配置
+        generator.packageConfig(builder -> {
+            // PostgreSQL需要处理schema，修改连接URL已经处理了schema问题
+            
+            builder
+                // 父类包名
+                .parent(parentPackageName)
+                // Controller 包名
+                .controller(controllerPackageName)
+                // Service 包名
+                .service(servicePackageName)
+                // ServiceImpl 包名
+                .serviceImpl(serviceImplPackageName)
+                // Mapper 包名
+                .mapper(mapperPackageName)
+                // Entity 包名
+                .entity(entityPackageName)
+                // 设置mapperXml生成路径
+                .pathInfo(pathInfo(projectName, projectInitDTO.getGroupId()))
+                .build();
+        });
+        
+        // 模板配置
+        generator.templateConfig(builder -> builder
+                .disable(disableTemplateType)
+                .build()
+        );
+        
+        // 策略配置
+        generator.strategyConfig(builder -> {
+            // PostgreSQL需要特殊处理
+            
+            builder
+                // 设置需要生成的表名
+                .addInclude(tableNames)
+                // 设置过滤表名前缀
+                .addTablePrefix(tablePrefix)
+                // 设置过滤表名后缀
+                .addTableSuffix(tableSuffix)
+                // 设置过滤表字段前缀
+                .addFieldPrefix(fieldPrefix)
+                // 设置过滤表字段后缀
+                .addFieldSuffix(fieldSuffix)
 
-                        // Controller 策略
-                        .controllerBuilder()
-                        // 覆盖已生成文件
-                        .fileOverride()
-                        // Controller父类
-                        .superClass(controllerSuperClass)
-                        // 开启生成 @RestController 控制器
-                        .enableRestStyle()
-                        // 格式化 Controller 接口名称。%s:表名。默认是"%sController"
-                        .formatFileName(formatControllerName)
+                // Controller 策略
+                .controllerBuilder()
+                // 覆盖已生成文件
+                .fileOverride()
+                // Controller父类
+                .superClass(controllerSuperClass)
+                // 开启生成 @RestController 控制器
+                .enableRestStyle()
+                // 格式化 Controller 接口名称。%s:表名。默认是"%sController"
+                .formatFileName(formatControllerName)
 
-                        // Service 策略
-                        .serviceBuilder()
-                        // 覆盖已生成文件
-                        .fileOverride()
-                        // 设置 service 接口父类
-                        .superServiceClass(StrUtil.isEmpty(superServiceClass) ? ConstVal.SUPER_SERVICE_CLASS : superServiceClass)
-                        // 设置 service 实现类父类
-                        .superServiceImplClass(StrUtil.isEmpty(superServiceImplClass) ? ConstVal.SUPER_SERVICE_IMPL_CLASS : superServiceImplClass)
-                        // 格式化 service 接口名称。%s:表名。默认是"I%sService"
-                        .formatServiceFileName(formatServiceFileName)
-                        // 格式化 service 实现类名称。%s:表名。默认是"%sServiceImpl"
-                        .formatServiceImplFileName(formatServiceImplFileName)
+                // Service 策略
+                .serviceBuilder()
+                // 覆盖已生成文件
+                .fileOverride()
+                // 设置 service 接口父类
+                .superServiceClass(StrUtil.isEmpty(superServiceClass) ? ConstVal.SUPER_SERVICE_CLASS : superServiceClass)
+                // 设置 service 实现类父类
+                .superServiceImplClass(StrUtil.isEmpty(superServiceImplClass) ? ConstVal.SUPER_SERVICE_IMPL_CLASS : superServiceImplClass)
+                // 格式化 service 接口名称。%s:表名。默认是"I%sService"
+                .formatServiceFileName(formatServiceFileName)
+                // 格式化 service 实现类名称。%s:表名。默认是"%sServiceImpl"
+                .formatServiceImplFileName(formatServiceImplFileName)
 
-                        // mapper策略
-                        .mapperBuilder()
-                        // 覆盖已生成文件
-                        .fileOverride()
-                        // mapper接口的父类
-                        .superClass(StrUtil.isEmpty(mapperSuperClass) ? ConstVal.SUPER_MAPPER_CLASS : mapperSuperClass)
-                        // 开启 @Mapper 注解
-                        //.enableMapperAnnotation()
-                        // 启用 BaseResultMap 生成
-                        .enableBaseResultMap()
-                        // 启用 BaseColumnList
-                        .enableBaseColumnList()
-                        // 格式化mapper接口名称。%s:表名。默认是"%sDao"
-                        .formatMapperFileName(formatMapperFileName)
-                        // 格式化xml文件名称。%s:表名。默认是"%sMapper"
-                        .formatXmlFileName(formatXmlFileName)
+                // mapper策略
+                .mapperBuilder()
+                // 覆盖已生成文件
+                .fileOverride()
+                // mapper接口的父类
+                .superClass(StrUtil.isEmpty(mapperSuperClass) ? ConstVal.SUPER_MAPPER_CLASS : mapperSuperClass)
+                // 开启 @Mapper 注解
+                //.enableMapperAnnotation()
+                // 启用 BaseResultMap 生成
+                .enableBaseResultMap()
+                // 启用 BaseColumnList
+                .enableBaseColumnList()
+                // 格式化mapper接口名称。%s:表名。默认是"%sDao"
+                .formatMapperFileName(formatMapperFileName)
+                // 格式化xml文件名称。%s:表名。默认是"%sMapper"
+                .formatXmlFileName(formatXmlFileName)
 
-                        // entity 策略
-                        .entityBuilder()
-                        // 覆盖已生成文件
-                        .fileOverride()
-                        // 实体类的父类
-                        .superClass(entitySuperClass)
-                        // 开启 Lombok 注解
-                        .enableLombok()
-                        // 开启生成实体时生成字段注解
-                        .enableTableFieldAnnotation()
-                        // 开启 ActiveRecord 模型
-                        .enableActiveRecord()
-                        // 乐观锁字段名(数据库)
-                        .versionColumnName(versionColumnName)
-                        // 乐观锁属性名(实体)
-                        .versionPropertyName(versionPropertyName)
-                        // 逻辑删除字段名(数据库)
-                        .logicDeleteColumnName(logicDeleteColumnName)
-                        // 逻辑删除属性名(实体)
-                        .logicDeletePropertyName(logicDeletePropertyName)
-                        // 添加父类公共字段
-                        .addSuperEntityColumns(superEntityColumns)
-                        // 添加忽略字段
-                        .addIgnoreColumns(ignoreColumns)
-                        // 自动填充字段
-                        .addTableFills(fillColumns)
-                        // 格式化实体类名称。%s:表名。默认是"%s"
-                        .formatFileName(formatFileName)
-                        .build())
+                // entity 策略
+                .entityBuilder()
+                // 覆盖已生成文件
+                .fileOverride()
+                // 实体类的父类
+                .superClass(entitySuperClass)
+                // 开启 Lombok 注解
+                .enableLombok()
+                // 开启生成实体时生成字段注解
+                .enableTableFieldAnnotation()
+                // 开启 ActiveRecord 模型
+                .enableActiveRecord()
+                // PostgreSQL特殊配置
+                .idType(IdType.AUTO)
+                // 乐观锁字段名(数据库)
+                .versionColumnName(versionColumnName)
+                // 乐观锁属性名(实体)
+                .versionPropertyName(versionPropertyName)
+                // 逻辑删除字段名(数据库)
+                .logicDeleteColumnName(logicDeleteColumnName)
+                // 逻辑删除属性名(实体)
+                .logicDeletePropertyName(logicDeletePropertyName)
+                // 添加父类公共字段
+                .addSuperEntityColumns(superEntityColumns)
+                // 添加忽略字段
+                .addIgnoreColumns(ignoreColumns)
+                // 自动填充字段
+                .addTableFills(fillColumns)
+                // 格式化实体类名称。%s:表名。默认是"%s"
+                .formatFileName(formatFileName)
+                .build();
+        });
 //                .injectionConfig(config -> {
 //                    // 自定义生成模板参数
 //                    Map<String,Object> paramMap = new HashMap<>();
@@ -314,7 +354,7 @@ public class MybatisPlusGenerator {
 //                    config.customFile(customFileMap);
 //                })
                 // 使用Freemarker引擎模板，默认的是Velocity引擎模板
-                .templateEngine(new FreemarkerTemplateEngine())
+        generator.templateEngine(new FreemarkerTemplateEngine())
                 .execute();
     }
 

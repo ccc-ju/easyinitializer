@@ -282,6 +282,28 @@
         .dependency-option.disabled {
             opacity: 0.6;
         }
+        
+        /* 复选框容器样式 */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f5f9fd;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            width: fit-content;
+        }
+        
+        .checkbox-label:hover {
+            background-color: #e6f2fd;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            cursor: pointer;
+            transform: scale(1.2);
+            margin-right: 8px;
+        }
     </style>
 </head>
 
@@ -322,32 +344,49 @@
                     <div class="col col-md-6">
                         <div class="form-group">
                             <label for="description">项目描述</label>
-                            <textarea id="description" class="form-control" placeholder="请简要描述项目功能"></textarea>
+                            <input type="text" id="description" class="form-control" placeholder="请简要描述项目功能">
                             <small class="error-text" id="descriptionError"></small>
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="databaseLink">数据库连接</label>
-                    <input type="text" id="databaseLink" class="form-control" placeholder="例如：127.0.0.1:3306/your-database-name">
-                    <small class="error-text" id="databaseLinkError"></small>
-                    <small style="color: #f39c12; display: block; margin-top: 5px;">注意：系统将使用默认值，如需自定义请填写完整的数据库信息</small>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="enableDatabase" checked>
+                        <span style="margin-left: 5px; font-weight: 500; color: #444;">启用数据库连接</span>
+                    </label>
                 </div>
                 
-                <div class="form-row">
-                    <div class="col col-md-6">
-                        <div class="form-group">
-                            <label for="username">数据库用户名</label>
-                            <input type="text" id="username" class="form-control" placeholder="请输入用户名">
-                            <small class="error-text" id="usernameError"></small>
-                        </div>
+                <div id="databaseSection">
+                    <div class="form-group">
+                        <label for="dbType">数据库类型</label>
+                        <select id="dbType" class="form-control">
+                            <option value="MYSQL">MySQL</option>
+                            <option value="POSTGRES">PostgreSQL</option>
+                        </select>
                     </div>
-                    <div class="col col-md-6">
-                        <div class="form-group">
-                            <label for="password">数据库密码</label>
-                            <input type="password" id="password" class="form-control" placeholder="请输入密码">
-                            <small class="error-text" id="passwordError"></small>
+                    
+                    <div class="form-group">
+                        <label for="databaseLink">数据库连接</label>
+                        <input type="text" id="databaseLink" class="form-control" placeholder="例如：127.0.0.1:3306/your-database-name">
+                        <small class="error-text" id="databaseLinkError"></small>
+                        <small style="color: #f39c12; display: block; margin-top: 5px;">注意：系统将使用默认值，如需自定义请填写完整的数据库信息</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="col col-md-6">
+                            <div class="form-group">
+                                <label for="username">数据库用户名</label>
+                                <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+                                <small class="error-text" id="usernameError"></small>
+                            </div>
+                        </div>
+                        <div class="col col-md-6">
+                            <div class="form-group">
+                                <label for="password">数据库密码</label>
+                                <input type="password" id="password" class="form-control" placeholder="请输入密码">
+                                <small class="error-text" id="passwordError"></small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -396,8 +435,11 @@
             const databaseLinkInput = document.getElementById('databaseLink');
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
+            const dbTypeInput = document.getElementById('dbType');
             const enableNacosInput = document.getElementById('enableNacos');
             const enableDubboInput = document.getElementById('enableDubbo');
+            const enableDatabaseInput = document.getElementById('enableDatabase');
+            const databaseSection = document.getElementById('databaseSection');
             const loadingOverlay = document.getElementById('loadingOverlay');
             
             // Error elements
@@ -406,6 +448,9 @@
             const databaseLinkError = document.getElementById('databaseLinkError');
             const usernameError = document.getElementById('usernameError');
             const passwordError = document.getElementById('passwordError');
+            
+            // 确保初始状态正确显示数据库部分
+            databaseSection.style.display = enableDatabaseInput.checked ? 'block' : 'none';
             
             // Handle form submission
             form.addEventListener('submit', function(event) {
@@ -428,14 +473,18 @@
                     projectName: projectNameInput.value.trim(),
                     version: versionInput.value.trim(),
                     description: descriptionInput.value.trim(),
-                    // 始终提供数据库相关信息，如果用户未填写则使用默认值
-                    databaseLink: databaseLinkInput.value.trim(),
-                    username: usernameInput.value.trim(),
-                    password: passwordInput.value.trim(),
-                    // 添加依赖选择
+                    // 只有在启用数据库时，才包含数据库相关参数
                     enableNacos: enableNacosInput.checked,
                     enableDubbo: enableDubboInput.checked
                 };
+                
+                // 只有在启用数据库时，才包含数据库相关参数
+                if (enableDatabaseInput.checked) {
+                    formData.databaseLink = databaseLinkInput.value.trim() || "localhost:3306/defaultdb";
+                    formData.username = usernameInput.value.trim() || "root";
+                    formData.password = passwordInput.value.trim() || "password";
+                    formData.dbType = dbTypeInput.value;
+                }
                 
                 // Set larger timeout for project generation
                 axios.defaults.timeout = 300000;
@@ -535,6 +584,37 @@
                 }
             });
             
+            // 控制数据库输入区域的显示
+            enableDatabaseInput.addEventListener('change', function() {
+                databaseSection.style.display = this.checked ? 'block' : 'none';
+                
+                // 如果取消数据库连接，清除相关错误提示
+                if (!this.checked) {
+                    databaseLinkError.style.display = 'none';
+                    usernameError.style.display = 'none';
+                    passwordError.style.display = 'none';
+                }
+            });
+            
+            // 根据数据库类型更新连接格式提示
+            dbTypeInput.addEventListener('change', function() {
+                let placeholder;
+                switch(this.value) {
+                    case 'MYSQL':
+                        placeholder = "例如：127.0.0.1:3306/your-database-name";
+                        break;
+                    case 'POSTGRESQL':
+                        placeholder = "例如：127.0.0.1:5432/your-database-name";
+                        break;
+                    default:
+                        placeholder = "例如：127.0.0.1:3306/your-database-name";
+                }
+                databaseLinkInput.placeholder = placeholder;
+            });
+            
+            // 初始设置连接格式提示
+            dbTypeInput.dispatchEvent(new Event('change'));
+            
             // Validate form inputs
             function validateForm() {
                 let isValid = true;
@@ -555,21 +635,23 @@
                     isValid = false;
                 }
                 
-                // 数据库字段的条件验证
-                const hasDatabaseLink = databaseLinkInput.value.trim() !== '';
-                
-                // 如果填写了数据库连接，则用户名和密码为必填
-                if (hasDatabaseLink) {
-                    // 验证用户名
-                    if (!usernameInput.value) {
-                        showError(usernameError, '已填写数据库连接，请输入数据库用户名');
-                        isValid = false;
-                    }
+                // 数据库字段的条件验证 - 只在启用数据库时验证
+                if (enableDatabaseInput.checked) {
+                    const hasDatabaseLink = databaseLinkInput.value.trim() !== '';
                     
-                    // 验证密码
-                    if (!passwordInput.value) {
-                        showError(passwordError, '已填写数据库连接，请输入数据库密码');
-                        isValid = false;
+                    // 如果填写了数据库连接，则用户名和密码为必填
+                    if (hasDatabaseLink) {
+                        // 验证用户名
+                        if (!usernameInput.value) {
+                            showError(usernameError, '已填写数据库连接，请输入数据库用户名');
+                            isValid = false;
+                        }
+                        
+                        // 验证密码
+                        if (!passwordInput.value) {
+                            showError(passwordError, '已填写数据库连接，请输入数据库密码');
+                            isValid = false;
+                        }
                     }
                 }
                 

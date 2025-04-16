@@ -15,6 +15,7 @@ public class ApplicationInfo {
     private String artifactId;
     private Boolean enableNacos;
     private Boolean enableDubbo;
+    private String dbType;
 
     public ApplicationInfo() {
     }
@@ -34,5 +35,14 @@ public class ApplicationInfo {
         this.artifactId = artifactId;
         this.enableNacos = enableNacos;
         this.enableDubbo = enableDubbo;
+    }
+
+    public ApplicationInfo(String packageName, String className, String artifactId, Boolean enableDubbo, Boolean enableNacos, String dbType) {
+        this.packageName = packageName;
+        this.className = className;
+        this.artifactId = artifactId;
+        this.enableNacos = enableNacos;
+        this.enableDubbo = enableDubbo;
+        this.dbType = dbType;
     }
 }

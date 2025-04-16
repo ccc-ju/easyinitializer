@@ -33,11 +33,6 @@
             <artifactId>dubbo</artifactId>
         </dependency>
         </#if>
-
-        <#--<dependency>
-            <groupId>com.deepinnet</groupId>
-            <artifactId>esp-common-lang</artifactId>
-        </dependency>-->
     </dependencies>
 
 </project>

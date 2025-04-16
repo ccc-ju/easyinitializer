@@ -24,7 +24,8 @@ public class GenerationApplication extends BaseModule {
                 applicationJavaName.toString(),
                 projectInfo.getArtifactId(),
                 projectInfo.getEnableNacos(),
-                projectInfo.getEnableDubbo()
+                projectInfo.getEnableDubbo(),
+                projectInfo.getDbType()
         );
 
         String packagePath = applicationInfo.getPackageName().replace(".", "/") + "/";

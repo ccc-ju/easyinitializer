@@ -70,12 +70,6 @@
             <scope>test</scope>
         </dependency>
 
-        <#--<dependency>
-            <groupId>com.deepinnet</groupId>
-            <artifactId>esp-common-lang</artifactId>
-            <version>${deepinnet-esp-common-lang.version}</version>
-        </dependency>-->
-
     </dependencies>
 
 </project>

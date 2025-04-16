@@ -13,6 +13,7 @@
     <artifactId>${artifactId}-common-dal</artifactId>
 
     <dependencies>
+        <#if dbType?? && dbType != "">
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
@@ -23,6 +24,7 @@
             <artifactId>mybatis-plus-generator</artifactId>
             <version>${r"${mybatis-plus.version}"}</version>
         </dependency>
+        </#if>
 
         <dependency>
             <groupId>org.freemarker</groupId>

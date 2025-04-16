@@ -33,6 +33,7 @@ spring:
         enabled: true
         url-pattern: /druid/*
 
+<#if enableDubbo>
 # dubbo
 dubbo:
   application:
@@ -51,6 +52,7 @@ dubbo:
     timeout: 3000
     retries: 0
     check: false
+</#if>
 
 mybatis-plus:
   mapper-locations: classpath*:mybatis/mapper/*Mapper.xml
