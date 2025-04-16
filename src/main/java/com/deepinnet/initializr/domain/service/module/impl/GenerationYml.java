@@ -1,5 +1,6 @@
 package com.deepinnet.initializr.domain.service.module.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.deepinnet.initializr.domain.model.ProjectInfo;
 import com.deepinnet.initializr.domain.service.module.BaseModule;
 import org.slf4j.Logger;
@@ -27,6 +28,11 @@ public class GenerationYml extends BaseModule {
         super.writeFile(file, "yml.ftl", null);
 
         logger.info("创建配置文件 application.yml {}", file.getPath());
+
+        if (StrUtil.isBlank(projectInfo.getDatabaseLink())) {
+            logger.warn("数据库连接信息为空，无法生成数据库配置文件");
+            return;
+        }
 
         File bootstrap = new File(
                 projectsRoot + "/src/main/resources/",

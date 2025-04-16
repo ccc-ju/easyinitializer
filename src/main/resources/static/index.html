@@ -4,375 +4,593 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>项目生成工具</title>
+    <title>EasyRigger项目生成工具</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script src="./js/axios.min.js"></script>
-
+    
+    <!-- 引入字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        html,
-        body {
+        :root {
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --warning-color: #f39c12;
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --border-color: #e1e4e8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: calc(100%);
-            /*background: url(./bg.jpg);*/
-            /*background-repeat: no-repeat;*/
-            /*background-size: 100% 100%;*/
+            height: 100%;
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
         }
 
-        .form-box {
-            width: 500px;
+        .container {
+            max-width: 700px;
             margin: 0 auto;
-            padding-top: 100px;
+            padding: 40px 20px;
         }
 
-        .form-title {
+        .page-header {
             text-align: center;
+            margin-bottom: 40px;
         }
 
-        .form-item {
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #bbb;
+        }
+
+        textarea.form-control {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error-text {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 350px;
+            background-color: #333;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
-            margin: 3px 0;
+            z-index: 1001;
+            animation: slideIn 0.3s;
+            transform: translateX(0);
         }
 
-        label {
-            display: block;
-            font-size: 16px;
-            flex: 90px 0 0;
+        .toast.success {
+            background-color: var(--success-color);
+            animation: slideIn 0.3s, fadeOut 0.5s 4.5s forwards;
         }
 
-        label::after {
-            content: "：";
-            display: inline-block;
-            vertical-align: middle;
+        .toast.error {
+            background-color: var(--error-color);
+            animation: slideIn 0.3s, fadeOut 0.5s 14.5s forwards;
         }
 
-        input.text-input,
-        textarea.text-input {
-            display: block;
-            padding: 0 10px;
-            border: 1px solid #ccc;
+        .toast.warning {
+            background-color: var(--warning-color);
+            animation: slideIn 0.3s, fadeOut 0.5s 4.5s forwards;
+        }
+
+        .toast-message {
+            margin-left: 12px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .toast-icon {
+            font-size: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+
+        .col {
+            position: relative;
             width: 100%;
-            height: 40px;
-            outline: none;
-            caret-color: #3aaff3;
-            /*光标颜色*/
-            transition: all 300ms;
-            border-left-width: 5px;
+            padding-right: 15px;
+            padding-left: 15px;
         }
 
-        input.text-input:valid {
-            border-color: #66c8f3;
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
         }
 
-        input.text-input:invalid {
-            border-color: #66c8f3;
-        }
-
-        input.text-input:focus {
-            border-color: #7575ef;
-        }
-
-        textarea.text-input:valid {
-            height: 90px;
-            padding-top: 10px;
-            border-color: #66c8f3;
-        }
-
-        textarea.text-input:focus {
-            border-color: #7575ef;
-        }
-
-        button {
-            width: 48%;
-            height: 40px;
-            padding: 0;
-            margin: 0;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-            background: #66c8f3;
-            color: #fff;
-        }
-
-        button::before {
-            --size: 0;
-            position: absolute;
-            left: var(--x);
-            top: var(--y);
-            width: var(--size);
-            height: var(--size);
-            background-image: radial-gradient(circle closest-side, #66c8f3, transparent);
-            content: "";
-            transform: translate3d(-50%, -50%, 0);
-            transition: width 200ms ease, height 200ms ease;
-        }
-
-
-        button:hover::before {
-            --size: 400px;
-        }
-
-        button {
-            margin-right: 4%;
-        }
-
-        button {
-            width: 48%;
-            height: 40px;
-            padding: 0;
-            margin: 0;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            background: #6ec2f7;
-            color: #fff;
-            -moz-transition: all .4s ease-in-out;
-            -o-transition: all .4s ease-in-out;
-            -webkit-transition: all .4s ease-in-out;
-            transition: all .4s ease-in-out;
-        }
-
-        button:hover {
-            background-position: 100% 0;
-            -moz-transition: all .4s ease-in-out;
-            -o-transition: all .4s ease-in-out;
-            -webkit-transition: all .4s ease-in-out;
-            transition: all .4s ease-in-out;
-        }
-
-        button:focus {
-            outline: none;
-        }
-
-        button {
-            background-image: linear-gradient(to right, #7ad0f5, #b29cf6);
-            /* box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75); */
-        }
-
-        span {
-            position: relative;
-            pointer-events: none;
-        }
-
-        .form-download {
-            top: 30px;
-            margin: 0 auto;
-        }
-
-        #spanId,
-        #spanName,
-        #spanVersion,
-        #spanDescription,
-        #spanDatabase,
-        #spanUsername,
-        #spanPassword {
-            margin-left: 90px;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <form class="form-box" id="form" onsubmit=onDownload(event)>
-        <h1 class="form-title">项目生成工具</h1>
-        <div class="form-item">
-            <label>坐&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标</label>
-            <input type="text" id="groupId" class="text-input" placeholder="com.deepinnet.xxx" oninput="setCustomValidity('')"
-                oninvalid="setCustomValidity('请输入坐标')" onblur="checkGroupId()" required>
+    <div class="container">
+        <div class="page-header">
+            <h1>EasyRigger项目生成工具</h1>
+            <p>快速创建符合规范的SpringBoot项目脚手架</p>
         </div>
-        <span id="spanId"></span>
-        <div class="form-item">
-            <label>名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称</label>
-            <input type="text" id="projectName" class="text-input" placeholder="请输入项目名" oninput="setCustomValidity('')"
-                oninvalid="setCustomValidity('请输入项目名')" onblur="checkProjectName()" required>
+        
+        <div class="card">
+            <form id="projectForm">
+                <div class="form-row">
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="groupId">项目坐标</label>
+                            <input type="text" id="groupId" class="form-control" placeholder="例如：com.deepinnet.xxx" required>
+                            <small class="error-text" id="groupIdError"></small>
+                        </div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="projectName">项目名称</label>
+                            <input type="text" id="projectName" class="form-control" placeholder="请输入项目名称" required>
+                            <small class="error-text" id="projectNameError"></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="version">项目版本</label>
+                            <input type="text" id="version" class="form-control" placeholder="例如：1.0.0-SNAPSHOT" value="1.0.0-SNAPSHOT">
+                            <small class="error-text" id="versionError"></small>
+                        </div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="description">项目描述</label>
+                            <textarea id="description" class="form-control" placeholder="请简要描述项目功能"></textarea>
+                            <small class="error-text" id="descriptionError"></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="databaseLink">数据库连接</label>
+                    <input type="text" id="databaseLink" class="form-control" placeholder="例如：127.0.0.1:3306/your-database-name">
+                    <small class="error-text" id="databaseLinkError"></small>
+                </div>
+                
+                <div class="form-row">
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="username">数据库用户名</label>
+                            <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+                            <small class="error-text" id="usernameError"></small>
+                        </div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="password">数据库密码</label>
+                            <input type="password" id="password" class="form-control" placeholder="请输入密码">
+                            <small class="error-text" id="passwordError"></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn" id="downloadBtn">生成并下载项目</button>
+                </div>
+            </form>
         </div>
-        <span id="spanName"></span>
-        <div class="form-item">
-            <label>版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
-            <input type="text" id="version" class="text-input" placeholder="请输入版本">
-        </div>
-        <span id="spanVersion"></span>
-        <div class="form-item">
-            <label>描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述</label>
-            <textarea type="textarea" id="description" rows="5" class="text-input" placeholder="请输入描述"></textarea>
-        </div>
-        <span id="spanDescription"></span>
-        <div class="form-item">
-            <label>database</label>
-            <input type="text" id="databaseLink" class="text-input" placeholder="127.0.0.1:3306/esp-policy-env-dev"
-                oninvalid="setCustomValidity('请输入数据库连接')" onblur="checkDatabase()" required>
-        </div>
-        <span id="spanDatabase"></span>
-        <div class="form-item">
-            <label>用&nbsp;&nbsp;户&nbsp;&nbsp;名</label>
-            <input type="text" id="username" class="text-input" placeholder="123456"
-                oninvalid="setCustomValidity('请输入数据库用户名')" onblur="checkDatabaseUsername()" required>
-        </div>
-        <span id="spanUsername"></span>
-        <div class="form-item">
-            <label>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</label>
-            <input type="text" id="password" class="text-input" placeholder="请输入数据库密码"
-                oninvalid="setCustomValidity('请输入数据库密码')" onblur="checkDatabasePassword()" required>
-        </div>
-        <span id="spanPassword"></span>
-        <div class="form-item">
-            <button class="form-download" type="submit" value="下 载" onclick="onDownload(event); return false;" onmousemove="move(event)">
-                <span>下 载</span>
-            </button>
-        </div>
-    </form>
-
-</body>
-<script>
-
-    const positionIpt = document.getElementById('groupId');
-    const positionIptProjectName = document.getElementById('projectName');
-    // 截取字符串
-    positionIpt.oninput = function () {
-        let value = positionIpt.value;
-        positionIptProjectName.value = value.substring(value.lastIndexOf('.') + 1, value.length);
-    }
-    // 校验坐标
-    function checkGroupId() {
-        const reg = /^([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)$/;
-        var positionIpt = document.getElementById('groupId');
-        var spanId = document.getElementById('spanId')
-        if (positionIpt.value === '' || positionIpt.value === null) {
-            spanId.innerHTML = '请输入坐标'.fontcolor('#7575ef');
-            return false;
-        }
-        if (!reg.test(positionIpt.value)) {
-            spanId.innerHTML = '请输入正确的坐标'.fontcolor("#7575ef");
-            return false;
-        }
-        spanId.innerHTML = '';
-        return true;
-    }
-    // 校验项目名
-    function checkProjectName() {
-        var positionIptProjectName = document.getElementById('projectName');
-        var spanName = document.getElementById('spanName')
-        if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-            spanName.innerHTML = '请输入项目名'.fontcolor("#7575ef");
-            return false;
-        }
-        spanName.innerHTML = '';
-        return true;
-    }
-
-    // 校验database连接
-    // function checkDatabase() {
-    //     var positionIptProjectName = document.getElementById('databaseLink');
-    //     var spanDatabase = document.getElementById('spanDatabase');
-    //     if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-    //         spanDatabase.innerHTML = '请输入数据库连接'.fontcolor("#7575ef");
-    //         return false;
-    //     }
-    //     spanDatabase.innerHTML = '';
-    //     return true;
-    // }
-    //
-    // // 校验database-username
-    // function checkDatabaseUsername() {
-    //     var positionIptProjectName = document.getElementById('username');
-    //     var spanUsername = document.getElementById('spanUsername');
-    //     if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-    //         spanUsername.innerHTML = '请输入用户名'.fontcolor("#7575ef");
-    //         return false;
-    //     }
-    //     spanUsername.innerHTML = '';
-    //     return true;
-    // }
-    //
-    // // 校验database-password
-    // function checkDatabasePassword() {
-    //     var positionIptProjectName = document.getElementById('password');
-    //     var spanPassword = document.getElementById('spanPassword');
-    //     if (positionIptProjectName.value === '' || positionIptProjectName.value === null) {
-    //         spanPassword.innerHTML = '请输入密码'.fontcolor("#7575ef");
-    //         return false;
-    //     }
-    //     spanPassword.innerHTML = '';
-    //     return true;
-    // }
-
-    // 验证表单数据
-    function onDownload() {
-        let groupIdCheck = checkGroupId();
-        let projectNameCheck = checkProjectName();
-
-        if (!groupIdCheck || !projectNameCheck) {
-            return false;
-        }
-
-        // 获取输入框的值
-        const groupId = document.getElementById('groupId').value;
-        const projectName = document.getElementById('projectName').value;
-        const version = document.getElementById('version').value;
-        const description = document.getElementById('description').value;
-        const databaseLink = document.getElementById('databaseLink').value;
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        // 构建请求参数
-        const data = {
-            groupId: groupId,
-            projectName: projectName,
-            version: version,
-            description: description,
-            databaseLink: databaseLink,
-            username: username,
-            password: password
-        };
-
-        axios.defaults.timeout = 300000;
-        // 发送POST请求
-        axios.post('http://192.168.3.200:27878/project/initGenerate', data,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                responseType: 'arraybuffer'
-            })
-            .then(function (response) {
-                let textDecoder = new TextDecoder();
-                let decodeResult = textDecoder.decode(response.data);
-                try{
-                    let parseJson = JSON.parse(decodeResult);
-                    console.log(parseJson);
-                } catch (error) {
-                    // 处理响应，例如下载文件
-                    console.log(response.data);
-                    const blob = new Blob([response.data], {type: 'application/zip'});
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', data.projectName + '.zip'); // 文件名可以根据实际情况修改
-                    document.body.appendChild(link);
-                    link.click();
-                    console.log('文件下载成功');
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>正在生成项目，请稍候...</p>
+    </div>
+    
+    <!-- Toast Notification Template (hidden by default) -->
+    <div id="toastContainer"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form elements
+            const form = document.getElementById('projectForm');
+            const groupIdInput = document.getElementById('groupId');
+            const projectNameInput = document.getElementById('projectName');
+            const versionInput = document.getElementById('version');
+            const descriptionInput = document.getElementById('description');
+            const databaseLinkInput = document.getElementById('databaseLink');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Error elements
+            const groupIdError = document.getElementById('groupIdError');
+            const projectNameError = document.getElementById('projectNameError');
+            const databaseLinkError = document.getElementById('databaseLinkError');
+            const usernameError = document.getElementById('usernameError');
+            const passwordError = document.getElementById('passwordError');
+            
+            // Handle form submission
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Reset error messages
+                resetErrors();
+                
+                // Validate form
+                if (!validateForm()) {
+                    return;
                 }
-            })
-            .catch(function (error) {
-                // 处理错误
-                console.log('文件下载失败', error);
+                
+                // Show loading overlay
+                showLoading();
+                
+                // Get form data
+                const formData = {
+                    groupId: groupIdInput.value.trim(),
+                    projectName: projectNameInput.value.trim(),
+                    version: versionInput.value.trim(),
+                    description: descriptionInput.value.trim()
+                };
+                
+                // 如果填写了数据库连接，则添加数据库相关信息
+                const databaseLink = databaseLinkInput.value.trim();
+                if (databaseLink) {
+                    formData.databaseLink = databaseLink;
+                    formData.username = usernameInput.value.trim();
+                    formData.password = passwordInput.value.trim();
+                }
+                
+                // Set larger timeout for project generation
+                axios.defaults.timeout = 300000;
+                
+                // Send POST request
+                axios.post('/project/initGenerate', formData, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    responseType: 'arraybuffer'
+                })
+                .then(function(response) {
+                    hideLoading();
+                    
+                    try {
+                        // Check if the response is JSON (error message)
+                        const textDecoder = new TextDecoder();
+                        const decodedData = textDecoder.decode(response.data);
+                        
+                        try {
+                            const jsonData = JSON.parse(decodedData);
+                            // If we get here, it's a JSON response (likely an error)
+                            showToast('error', jsonData.message || '生成项目时发生错误');
+                        } catch (e) {
+                            // Not JSON, it's a file download
+                            handleFileDownload(response.data, formData.projectName);
+                        }
+                    } catch (e) {
+                        // Fallback error handling
+                        showToast('error', '处理响应数据时发生错误');
+                    }
+                })
+                .catch(function(error) {
+                    hideLoading();
+                    
+                    let errorMessage = '下载项目时发生错误';
+                    
+                    if (error.response) {
+                        // Server responded with an error status
+                        if (error.response.data) {
+                            try {
+                                const textDecoder = new TextDecoder();
+                                const decodedData = textDecoder.decode(error.response.data);
+                                try {
+                                    const jsonData = JSON.parse(decodedData);
+                                    errorMessage = jsonData.message || '服务器返回错误';
+                                } catch (e) {
+                                    errorMessage = decodedData || '服务器返回错误';
+                                }
+                            } catch (e) {
+                                errorMessage = '服务器返回错误：' + error.response.status;
+                            }
+                        } else {
+                            errorMessage = '服务器返回错误：' + error.response.status;
+                        }
+                    } else if (error.request) {
+                        // No response received
+                        errorMessage = '服务器无响应，请检查网络连接';
+                    } else {
+                        // Request setup error
+                        errorMessage = '请求设置错误：' + error.message;
+                    }
+                    
+                    showToast('error', errorMessage);
+                });
             });
-    }
-    // 下载按钮鼠标移入效果
-    function move(e) {
-        const x = e.pageX - e.target.offsetLeft;
-        const y = e.pageY - e.target.offsetTop;
-        e.target.style.setProperty('--x', `${x}px`);
-        e.target.style.setProperty('--y', `${y}px`);
-    }
-</script>
+            
+            // Automatic project name from groupId
+            groupIdInput.addEventListener('input', function() {
+                const value = this.value;
+                if (value.includes('.')) {
+                    const parts = value.split('.');
+                    projectNameInput.value = parts[parts.length - 1];
+                }
+            });
+            
+            // Validate form inputs
+            function validateForm() {
+                let isValid = true;
+                
+                // Validate groupId
+                const groupIdRegex = /^([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)$/;
+                if (!groupIdInput.value) {
+                    showError(groupIdError, '请输入项目坐标');
+                    isValid = false;
+                } else if (!groupIdRegex.test(groupIdInput.value)) {
+                    showError(groupIdError, '坐标格式不正确，应为 com.example.project 格式');
+                    isValid = false;
+                }
+                
+                // Validate project name
+                if (!projectNameInput.value) {
+                    showError(projectNameError, '请输入项目名称');
+                    isValid = false;
+                }
+                
+                // 数据库字段的条件验证
+                const hasDatabaseLink = databaseLinkInput.value.trim() !== '';
+                
+                // 如果填写了数据库连接，则用户名和密码为必填
+                if (hasDatabaseLink) {
+                    // 验证用户名
+                    if (!usernameInput.value) {
+                        showError(usernameError, '已填写数据库连接，请输入数据库用户名');
+                        isValid = false;
+                    }
+                    
+                    // 验证密码
+                    if (!passwordInput.value) {
+                        showError(passwordError, '已填写数据库连接，请输入数据库密码');
+                        isValid = false;
+                    }
+                }
+                
+                return isValid;
+            }
+            
+            // Show validation error
+            function showError(element, message) {
+                element.textContent = message;
+                element.style.display = 'block';
+            }
+            
+            // Reset all error messages
+            function resetErrors() {
+                const errorElements = document.querySelectorAll('.error-text');
+                errorElements.forEach(function(element) {
+                    element.textContent = '';
+                    element.style.display = 'none';
+                });
+            }
+            
+            // Show loading overlay
+            function showLoading() {
+                loadingOverlay.style.display = 'flex';
+            }
+            
+            // Hide loading overlay
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
+            
+            // Handle file download
+            function handleFileDownload(data, fileName) {
+                const blob = new Blob([data], { type: 'application/zip' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileName + '.zip');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('success', '项目生成成功，正在下载...');
+            }
+            
+            // Show toast notification
+            function showToast(type, message) {
+                const toastContainer = document.getElementById('toastContainer');
+                
+                // Remove any existing toasts
+                while (toastContainer.firstChild) {
+                    toastContainer.removeChild(toastContainer.firstChild);
+                }
+                
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                // Add icon based on type
+                let icon = '';
+                if (type === 'success') {
+                    icon = '✓';
+                } else if (type === 'error') {
+                    icon = '✕';
+                } else if (type === 'warning') {
+                    icon = '⚠';
+                } else {
+                    icon = 'ℹ';
+                }
+                
+                toast.innerHTML = `
+                    <span class="toast-icon">${icon}</span>
+                    <span class="toast-message">${message}</span>
+                `;
+                
+                // Add toast to container
+                toastContainer.appendChild(toast);
+                
+                // 根据提示类型设置不同的停留时间：错误提示停留更长时间
+                const duration = type === 'error' ? 3000 : 3000;
+                
+                // Remove toast after specified duration
+                setTimeout(function() {
+                    if (toast && toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, duration);
+            }
+        });
+    </script>
+</body>
 
 </html>
