@@ -370,7 +370,7 @@
                         <label for="databaseLink">数据库连接</label>
                         <input type="text" id="databaseLink" class="form-control" placeholder="例如：127.0.0.1:3306/your-database-name">
                         <small class="error-text" id="databaseLinkError"></small>
-                        <small style="color: #f39c12; display: block; margin-top: 5px;">注意：系统将使用默认值，如需自定义请填写完整的数据库信息</small>
+                        <small style="color: #f39c12; display: block; margin-top: 5px;">注意：使用数据库连接可自动生成该库表的repository层代码</small>
                     </div>
                     
                     <div class="form-row">
@@ -480,9 +480,9 @@
                 
                 // 只有在启用数据库时，才包含数据库相关参数
                 if (enableDatabaseInput.checked) {
-                    formData.databaseLink = databaseLinkInput.value.trim() || "localhost:3306/defaultdb";
-                    formData.username = usernameInput.value.trim() || "root";
-                    formData.password = passwordInput.value.trim() || "password";
+                    formData.databaseLink = databaseLinkInput.value.trim();
+                    formData.username = usernameInput.value.trim();
+                    formData.password = passwordInput.value.trim();
                     formData.dbType = dbTypeInput.value;
                 }
                 

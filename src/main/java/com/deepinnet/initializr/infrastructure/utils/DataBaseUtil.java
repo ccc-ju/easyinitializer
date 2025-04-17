@@ -2,6 +2,8 @@ package com.deepinnet.initializr.infrastructure.utils;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.deepinnet.initializr.domain.enums.DbTypeEnum;
 import com.deepinnet.initializr.dto.SqlCompareConnectionDTO;
 import com.deepinnet.initializr.dto.SqlConnectionDTO;
 import com.deepinnet.initializr.exception.InitializerException;
@@ -180,7 +182,7 @@ public class DataBaseUtil {
             DatabaseMetaData metaData = connection.getMetaData();
 
             // 获取所有表名
-            resultSet = metaData.getTables(dataBaseName, null, null, new String[]{"TABLE"});
+            resultSet = metaData.getTables(dataBaseName, StrUtil.equals(dbType, DbTypeEnum.POSTGRES.getType()) ? "public" : null, null, new String[]{"TABLE"});
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 tableList.add(tableName);
