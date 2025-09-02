@@ -15,6 +15,11 @@ public enum InitializerTypeEnum {
      */
     DEEPINNET,
 
+    /**
+     * 普通项目模板(六模块结构: api-model, dal, service, web, app-starter, common)
+     */
+    SIMPLE_PROJECT,
+
     ;
 
 }

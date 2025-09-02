@@ -351,6 +351,18 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="projectType">项目类型</label>
+                    <select id="projectType" class="form-control">
+                        <option value="DEEPINNET">深度智联项目模板（默认）</option>
+                        <option value="SIMPLE_PROJECT">普通项目模板（六模块结构）</option>
+                    </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        深度智联模板：包含Deepinnet自研组件和框架<br>
+                        普通项目模板：标准的六模块结构（api-model, dal, service, web, app-starter, common）
+                    </small>
+                </div>
+                
+                <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="enableDatabase" checked>
                         <span style="margin-left: 5px; font-weight: 500; color: #444;">启用数据库连接</span>
@@ -432,6 +444,7 @@
             const projectNameInput = document.getElementById('projectName');
             const versionInput = document.getElementById('version');
             const descriptionInput = document.getElementById('description');
+            const projectTypeInput = document.getElementById('projectType');
             const databaseLinkInput = document.getElementById('databaseLink');
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
@@ -473,6 +486,7 @@
                     projectName: projectNameInput.value.trim(),
                     version: versionInput.value.trim(),
                     description: descriptionInput.value.trim(),
+                    projectType: projectTypeInput.value,
                     // 只有在启用数据库时，才包含数据库相关参数
                     enableNacos: enableNacosInput.checked,
                     enableDubbo: enableDubboInput.checked

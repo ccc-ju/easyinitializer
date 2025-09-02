@@ -46,8 +46,10 @@ public class ProjectGeneratorFacadeImpl implements ProjectGeneratorFacade {
         // 给定项目目录
         projectInitDTO.setPath(System.getProperty("user.dir") + "/" + projectInitDTO.getProjectName());
 
-        // 生成项目结构及相应的基础代码
-        initializerEngine.execute(projectInitDTO, InitializerTypeEnum.DEEPINNET);
+        // 根据项目类型选择相应的处理器生成项目结构及相应的基础代码
+        InitializerTypeEnum projectType = projectInitDTO.getProjectType() != null ? 
+            projectInitDTO.getProjectType() : InitializerTypeEnum.DEEPINNET;
+        initializerEngine.execute(projectInitDTO, projectType);
 
         // 项目下载
         zipDownload(projectInitDTO, response);

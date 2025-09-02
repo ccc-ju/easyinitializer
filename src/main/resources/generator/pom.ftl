@@ -260,33 +260,6 @@
                 <version>${r"${knife.version}"}</version>
             </dependency>
 
-            <!--schedulerx2-->
-            <dependency>
-                <groupId>com.aliyun.schedulerx</groupId>
-                <artifactId>schedulerx2-spring-boot-starter</artifactId>
-                <version>${r"${schedulerx2.version}"}</version>
-                <!--如果用的是logback，需要把log4j和log4j2排除掉 -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.aliyun.schedulerx</groupId>
-                <artifactId>schedulerx2-plugin-kubernetes</artifactId>
-                <version>${r"${schedulerx-plugin-kubernetes}"}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
