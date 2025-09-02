@@ -44,11 +44,6 @@ public class GenerationSimpleWeb extends BaseModule {
             controllerDir.mkdirs();
         }
 
-        // 创建package-info.java
-        File packageInfoFile = new File(srcMainJavaDir, "package-info.java");
-        String packageName = projectInfo.getGroupId() + "." + projectInfo.getArtifactId().replaceAll("-", "") + ".web";
-        super.writeFile(packageInfoFile, "package-info.ftl", new ApplicationInfo(packageName));
-
         logger.info("创建普通项目web模块 {}", moduleDir.getPath());
     }
 }

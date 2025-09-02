@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.deepinnet.initializr.domain.enums.DbTypeEnum;
+import com.deepinnet.initializr.domain.enums.InitializerTypeEnum;
 import com.deepinnet.initializr.dto.ProjectInitDTO;
 import com.deepinnet.initializr.exception.InitializerException;
 
@@ -127,12 +128,19 @@ public class MybatisPlusGenerator {
     // 包配置
     // 实体类包名
     static String entityPackageName = "common.dal.dataobject";
+    static String normalEntityPackageName = "dal.dataobject";
+
     // mapper接口包名
     static String mapperPackageName = "common.dal.dao";
+    static String normalMapperPackageName = "dal.dao";
+
     // service接口包名
     static String servicePackageName = "core.repository";
+    static String normalServicePackageName = "dal.repository";
     // service实现类包名
     static String serviceImplPackageName = "core.repository.impl";
+    static String normalServiceImplPackageName = "dal.repository.impl";
+
     // controller包名
     static String controllerPackageName = "controller";
 
@@ -197,8 +205,14 @@ public class MybatisPlusGenerator {
             }
         }
         
-        // 获取表名
-        tableNames = DataBaseUtil.getTableNames(projectInitDTO.getDatabaseLink(), projectInitDTO.getUsername(), projectInitDTO.getPassword(), projectInitDTO.getDbType().getType());
+        // 获取表名 - 优先使用用户选择的表，否则获取所有表
+        if (projectInitDTO.getSelectedTables() != null && !projectInitDTO.getSelectedTables().isEmpty()) {
+            // 使用用户选择的表
+            tableNames = projectInitDTO.getSelectedTables().toArray(new String[0]);
+        } else {
+            // 获取所有表
+            tableNames = DataBaseUtil.getTableNames(projectInitDTO.getDatabaseLink(), projectInitDTO.getUsername(), projectInitDTO.getPassword(), projectInitDTO.getDbType().getType());
+        }
         
         projectName = projectInitDTO.getProjectName();
 
@@ -236,15 +250,15 @@ public class MybatisPlusGenerator {
                 // Controller 包名
                 .controller(controllerPackageName)
                 // Service 包名
-                .service(servicePackageName)
+                .service(ObjectUtil.equals(projectInitDTO.getProjectType(), InitializerTypeEnum.DEEPINNET) ? servicePackageName : normalServicePackageName)
                 // ServiceImpl 包名
-                .serviceImpl(serviceImplPackageName)
+                .serviceImpl(ObjectUtil.equals(projectInitDTO.getProjectType(), InitializerTypeEnum.DEEPINNET) ? serviceImplPackageName : normalServiceImplPackageName)
                 // Mapper 包名
-                .mapper(mapperPackageName)
+                .mapper(ObjectUtil.equals(projectInitDTO.getProjectType(), InitializerTypeEnum.DEEPINNET) ? mapperPackageName : normalMapperPackageName)
                 // Entity 包名
-                .entity(entityPackageName)
+                .entity(ObjectUtil.equals(projectInitDTO.getProjectType(), InitializerTypeEnum.DEEPINNET) ? entityPackageName : normalEntityPackageName)
                 // 设置mapperXml生成路径
-                .pathInfo(pathInfo(projectName, projectInitDTO.getGroupId()))
+                .pathInfo(pathInfo(projectName, projectInitDTO.getGroupId(), projectInitDTO.getProjectType()))
                 .build();
         });
         
@@ -360,9 +374,12 @@ public class MybatisPlusGenerator {
 
     /**
      * 各文件的输出路径
+     * @param projectName 项目名称
+     * @param groupId 组ID
+     * @param projectType 项目类型
      * @return pathInfo
      */
-    public static Map<OutputFile, String> pathInfo(String projectName, String groupId) {
+    public static Map<OutputFile, String> pathInfo(String projectName, String groupId, InitializerTypeEnum projectType) {
         // 基础路径
         String basePath = System.getProperty("user.dir") + "/" + projectName;
         // java代码的路径
@@ -370,29 +387,38 @@ public class MybatisPlusGenerator {
         // 资源文件的路径
         String resourcePath = "/src/main/resources";
 
-        // 存放各文件的项目名（单模块项目不用配置）
-        // xml文件所在模块
-        String xmlProject = "/"+ projectName +"-common/" + projectName + "-common-dal";
-        // 数据库DO文件所在模块
-        String entityProject = "/" + projectName + "-common/" + projectName + "-common-dal";
-        // mapper接口文件所在模块
-        String mapperProject = "/" + projectName + "-common/" + projectName + "-common-dal";
-        // repository接口文件所在模块（对应service）
-        String serviceProject = "/" + projectName + "-core/" + projectName + "-core-service";
-        // repositoryImpl接口实现文件所在模块（对应serviceImpl）
-        String serviceImplProject = "/" + projectName + "-core/" + projectName + "-core-service";
-        // 不生成controller
-        // String controllerProject =  "";
-
+        // 根据项目类型配置不同的模块结构
+        String xmlProject, entityProject, mapperProject, serviceProject, serviceImplProject;
+        String xmlPackage, entityPackage, mapperPackage, servicePackage, serviceImplPackage;
         String position = "/" + groupId.replace(".", "/");
-        /*存放各文件的包路径*/
-        String xmlPackage = "/mybatis/mapper";
-        String entityPackage = position + "/common/dal/dataobject";
-        String mapperPackage = position + "/common/dal/dao";
-        String servicePackage = position + "/core/repository";
-        String serviceImplPackage = position + "/core/repository/impl";
-        // 不生成controller
-        // String controllerPackage =  "/com.generator/controller";
+        
+        if (projectType == InitializerTypeEnum.SIMPLE_PROJECT) {
+            // 普通项目模板（六模块结构）
+            xmlProject = "/" + projectName + "-dal";
+            entityProject = "/" + projectName + "-dal";
+            mapperProject = "/" + projectName + "-dal";
+            serviceProject = "/" + projectName + "-dal";
+            serviceImplProject = "/" + projectName + "-dal";
+            
+            xmlPackage = "/mybatis/mapper";
+            entityPackage = position + "/dal/dataobject";
+            mapperPackage = position + "/dal/dao";
+            servicePackage = position + "/dal/repository";
+            serviceImplPackage = position + "/dal/repository/impl";
+        } else {
+            // 深度智联项目模板（原有结构）
+            xmlProject = "/" + projectName + "-common/" + projectName + "-common-dal";
+            entityProject = "/" + projectName + "-common/" + projectName + "-common-dal";
+            mapperProject = "/" + projectName + "-common/" + projectName + "-common-dal";
+            serviceProject = "/" + projectName + "-core/" + projectName + "-core-service";
+            serviceImplProject = "/" + projectName + "-core/" + projectName + "-core-service";
+            
+            xmlPackage = "/mybatis/mapper";
+            entityPackage = position + "/common/dal/dataobject";
+            mapperPackage = position + "/common/dal/dao";
+            servicePackage = position + "/core/repository";
+            serviceImplPackage = position + "/core/repository/impl";
+        }
 
         Map<OutputFile, String> pathInfo = new HashMap<>();
         pathInfo.put(OutputFile.xml, basePath + xmlProject + resourcePath + xmlPackage);
@@ -403,6 +429,15 @@ public class MybatisPlusGenerator {
         // 不生成controller
         // pathInfo.put(OutputFile.controller, basePath + controllerProject + javaPath + controllerPackage);
         return pathInfo;
+    }
+
+    /**
+     * 保留原有方法以向后兼容
+     * @deprecated 请使用 {@link #pathInfo(String, String, InitializerTypeEnum)}
+     */
+    @Deprecated
+    public static Map<OutputFile, String> pathInfo(String projectName, String groupId) {
+        return pathInfo(projectName, groupId, InitializerTypeEnum.DEEPINNET);
     }
 
 

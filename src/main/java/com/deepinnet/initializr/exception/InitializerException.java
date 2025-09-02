@@ -34,7 +34,7 @@ public class InitializerException extends RuntimeException {
     /**
      * 异常构造函数。
      *
-     * <p>保险内部异常时使用
+     * <p>内部异常时使用
      *
      * @param espErrorCode 内部错误码
      * @param message      异常信息
@@ -45,9 +45,9 @@ public class InitializerException extends RuntimeException {
 
 
     /**
-     * 保险异常构造函数。
+     * 异常构造函数。
      *
-     * <p>保险内部异常时使用
+     * <p>内部异常时使用
      *
      * @param espErrorCode 内部错误码
      * @param message      异常信息
@@ -58,7 +58,7 @@ public class InitializerException extends RuntimeException {
     }
 
     /**
-     * 保险异常构造函数。
+     * 异常构造函数。
      *
      * @param espErrorCode 内部错误码
      * @param message      异常信息
@@ -69,7 +69,7 @@ public class InitializerException extends RuntimeException {
     }
 
     /**
-     * 保险异常构造函数。
+     * 异常构造函数。
      *
      * @param espErrorCode
      * @param message

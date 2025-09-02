@@ -353,12 +353,12 @@
                 <div class="form-group">
                     <label for="projectType">项目类型</label>
                     <select id="projectType" class="form-control">
-                        <option value="DEEPINNET">深度智联项目模板（默认）</option>
                         <option value="SIMPLE_PROJECT">普通项目模板（六模块结构）</option>
+                        <option value="DEEPINNET">深度智联项目模板</option>
                     </select>
                     <small style="color: #666; display: block; margin-top: 5px;">
-                        深度智联模板：包含Deepinnet自研组件和框架<br>
-                        普通项目模板：标准的六模块结构（api-model, dal, service, web, app-starter, common）
+                        普通项目模板：标准的六模块结构（api-model, dal, service, web, app-starter, common）<br>
+                        深度智联模板：包含Deepinnet自研组件和框架
                     </small>
                 </div>
                 
@@ -373,8 +373,8 @@
                     <div class="form-group">
                         <label for="dbType">数据库类型</label>
                         <select id="dbType" class="form-control">
-                            <option value="MYSQL">MySQL</option>
                             <option value="POSTGRES">PostgreSQL</option>
+                            <option value="MYSQL">MySQL</option>
                         </select>
                     </div>
                     
@@ -399,6 +399,29 @@
                                 <input type="password" id="password" class="form-control" placeholder="请输入密码">
                                 <small class="error-text" id="passwordError"></small>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="button" class="btn" id="testConnectionBtn" style="background-color: #f39c12; margin-bottom: 15px;">测试连接并获取表</button>
+                    </div>
+                    
+                    <!-- 数据库表选择区域 -->
+                    <div id="tableSelectionSection" style="display: none;">
+                        <div class="form-group">
+                            <label>选择需要生成代码的数据库表</label>
+                            <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <label class="checkbox-label" style="background-color: #e6f3ff;">
+                                        <input type="checkbox" id="selectAllTables">
+                                        <span style="margin-left: 5px; font-weight: 500;">全选/取消全选</span>
+                                    </label>
+                                </div>
+                                <div id="tablesContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <!-- 动态生成的表选择项 -->
+                                </div>
+                            </div>
+                            <small style="color: #666; display: block; margin-top: 5px;">选择的表将生成对应的DO、Mapper、XML等代码文件</small>
                         </div>
                     </div>
                 </div>
@@ -454,6 +477,11 @@
             const enableDatabaseInput = document.getElementById('enableDatabase');
             const databaseSection = document.getElementById('databaseSection');
             const loadingOverlay = document.getElementById('loadingOverlay');
+            const testConnectionBtn = document.getElementById('testConnectionBtn');
+            const tableSelectionSection = document.getElementById('tableSelectionSection');
+            const tablesContainer = document.getElementById('tablesContainer');
+            const selectAllTablesInput = document.getElementById('selectAllTables');
+            const dependencyOptions = document.querySelector('.dependency-options').parentElement;
             
             // Error elements
             const groupIdError = document.getElementById('groupIdError');
@@ -464,6 +492,27 @@
             
             // 确保初始状态正确显示数据库部分
             databaseSection.style.display = enableDatabaseInput.checked ? 'block' : 'none';
+            
+            // 初始化项目类型相关的显示状态
+            updateProjectTypeRelatedUI();
+            
+            // 项目类型切换事件
+            projectTypeInput.addEventListener('change', function() {
+                updateProjectTypeRelatedUI();
+            });
+            
+            // 测试数据库连接按钮事件
+            testConnectionBtn.addEventListener('click', function() {
+                testDatabaseConnection();
+            });
+            
+            // 全选/取消全选功能
+            selectAllTablesInput.addEventListener('change', function() {
+                const tableCheckboxes = document.querySelectorAll('.table-checkbox');
+                tableCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
             
             // Handle form submission
             form.addEventListener('submit', function(event) {
@@ -498,6 +547,12 @@
                     formData.username = usernameInput.value.trim();
                     formData.password = passwordInput.value.trim();
                     formData.dbType = dbTypeInput.value;
+                    
+                    // 添加选中的表
+                    const selectedTables = getSelectedTables();
+                    if (selectedTables.length > 0) {
+                        formData.selectedTables = selectedTables;
+                    }
                 }
                 
                 // Set larger timeout for project generation
@@ -753,6 +808,147 @@
                         toast.parentNode.removeChild(toast);
                     }
                 }, duration);
+            }
+            
+            // 测试数据库连接并获取表列表
+            function testDatabaseConnection() {
+                // 验证数据库连接参数
+                if (!databaseLinkInput.value.trim()) {
+                    showToast('error', '请先输入数据库连接');
+                    return;
+                }
+                if (!usernameInput.value.trim()) {
+                    showToast('error', '请先输入数据库用户名');
+                    return;
+                }
+                if (!passwordInput.value.trim()) {
+                    showToast('error', '请先输入数据库密码');
+                    return;
+                }
+                
+                // 显示加载状态
+                testConnectionBtn.disabled = true;
+                testConnectionBtn.textContent = '正在连接...';
+                
+                // 构建请求数据
+                const connectionData = {
+                    databaseLink: databaseLinkInput.value.trim(),
+                    username: usernameInput.value.trim(),
+                    password: passwordInput.value.trim(),
+                    dbType: dbTypeInput.value === 'MYSQL' ? 'mysql' : 'postgres'
+                };
+                
+                // 发送测试连接请求
+                axios.post('/project/testConnection', connectionData, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000 // 30秒超时
+                })
+                .then(function(response) {
+                    testConnectionBtn.disabled = false;
+                    testConnectionBtn.textContent = '测试连接并获取表';
+                    
+                    if (response.data && response.data.success && response.data.data) {
+                        const tables = response.data.data;
+                        if (tables.length > 0) {
+                            showTables(tables);
+                            showToast('success', `成功获取到 ${tables.length} 个数据库表`);
+                        } else {
+                            showToast('warning', '数据库中没有找到任何表');
+                        }
+                    } else {
+                        showToast('error', '获取数据库表失败');
+                    }
+                })
+                .catch(function(error) {
+                    testConnectionBtn.disabled = false;
+                    testConnectionBtn.textContent = '测试连接并获取表';
+                    
+                    let errorMessage = '数据库连接失败';
+                    if (error.response && error.response.data) {
+                        if (error.response.data.errorDesc) {
+                            errorMessage = error.response.data.errorDesc;
+                        } else if (error.response.data.message) {
+                            errorMessage = error.response.data.message;
+                        }
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    showToast('error', errorMessage);
+                });
+            }
+            
+            // 显示数据库表选择界面
+            function showTables(tables) {
+                tablesContainer.innerHTML = '';
+                
+                tables.forEach(function(table) {
+                    const tableItem = document.createElement('div');
+                    tableItem.innerHTML = `
+                        <label class="checkbox-label" style="width: 100%;">
+                            <input type="checkbox" class="table-checkbox" value="${table}">
+                            <span style="margin-left: 5px;">${table}</span>
+                        </label>
+                    `;
+                    tablesContainer.appendChild(tableItem);
+                });
+                
+                // 显示表选择区域
+                tableSelectionSection.style.display = 'block';
+                
+                // 添加个别复选框的事件监听
+                const tableCheckboxes = document.querySelectorAll('.table-checkbox');
+                tableCheckboxes.forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        updateSelectAllState();
+                    });
+                });
+            }
+            
+            // 更新全选按钮的状态
+            function updateSelectAllState() {
+                const tableCheckboxes = document.querySelectorAll('.table-checkbox');
+                const checkedCount = document.querySelectorAll('.table-checkbox:checked').length;
+                
+                if (checkedCount === 0) {
+                    selectAllTablesInput.checked = false;
+                    selectAllTablesInput.indeterminate = false;
+                } else if (checkedCount === tableCheckboxes.length) {
+                    selectAllTablesInput.checked = true;
+                    selectAllTablesInput.indeterminate = false;
+                } else {
+                    selectAllTablesInput.checked = false;
+                    selectAllTablesInput.indeterminate = true;
+                }
+            }
+            
+            // 获取选中的表
+            function getSelectedTables() {
+                const checkedBoxes = document.querySelectorAll('.table-checkbox:checked');
+                return Array.from(checkedBoxes).map(checkbox => checkbox.value);
+            }
+            
+            // 更新项目类型相关的UI显示
+            function updateProjectTypeRelatedUI() {
+                const projectType = projectTypeInput.value;
+                
+                if (projectType === 'SIMPLE_PROJECT') {
+                    // 普通项目模板：只显示PostgreSQL，隐藏依赖选择
+                    dbTypeInput.innerHTML = '<option value="POSTGRES">PostgreSQL</option>';
+                    dependencyOptions.style.display = 'none';
+                } else {
+                    // 深度智联模板：显示所有数据库选项和依赖选择
+                    dbTypeInput.innerHTML = `
+                        <option value="MYSQL">MySQL</option>
+                        <option value="POSTGRES">PostgreSQL</option>
+                    `;
+                    dependencyOptions.style.display = 'block';
+                }
+                
+                // 更新数据库连接格式提示
+                dbTypeInput.dispatchEvent(new Event('change'));
             }
         });
     </script>

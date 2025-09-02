@@ -1,5 +1,6 @@
 package com.deepinnet.initializr.domain.service.module.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.deepinnet.initializr.domain.model.ProjectInfo;
 import com.deepinnet.initializr.domain.service.module.BaseModule;
 import org.slf4j.Logger;
@@ -56,6 +57,16 @@ public class GenerationSimpleAppStarter extends BaseModule {
         // 创建logback配置
         File logbackFile = new File(resourcesDir, "logback-spring.xml");
         super.writeFile(logbackFile, "logback-spring.ftl", projectInfo);
+
+        if (StrUtil.isBlank(projectInfo.getDatabaseLink())) {
+            logger.warn("数据库连接信息为空，无法生成数据库配置文件");
+            return;
+        }
+
+        File applicationLocalYamlFile = new File(resourcesDir, "application-local.yml");
+
+        // 写入文件
+        super.writeFile(applicationLocalYamlFile, "local-yml.ftl", projectInfo);
 
         logger.info("创建普通项目app-starter模块 {}", moduleDir.getPath());
     }

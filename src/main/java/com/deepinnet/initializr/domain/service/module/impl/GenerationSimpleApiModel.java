@@ -40,11 +40,6 @@ public class GenerationSimpleApiModel extends BaseModule {
             srcMainJavaDir.mkdirs();
         }
 
-        // 创建package-info.java
-        File packageInfoFile = new File(srcMainJavaDir, "package-info.java");
-        String packageName = projectInfo.getGroupId() + "." + projectInfo.getArtifactId().replaceAll("-", "") + ".api.model";
-        super.writeFile(packageInfoFile, "package-info.ftl", new ApplicationInfo(packageName));
-
         logger.info("创建普通项目api-model模块 {}", moduleDir.getPath());
     }
 }

@@ -30,12 +30,13 @@
         <pageHelper.version>1.4.7</pageHelper.version>
         <mapstruct.version>1.5.0.Final</mapstruct.version>
         <#if dbType?? && dbType != "">
-            <mybatis-plus.version>3.5.3</mybatis-plus.version>
-            <beetl.version>3.0.9.RELEASE</beetl.version>
+        <mybatis-plus.version>3.5.3</mybatis-plus.version>
+        <beetl.version>3.0.9.RELEASE</beetl.version>
+        </#if>
+        <#if dbType?? && dbType == "postgresql">
+        <dynamic-datasource.version>3.5.1</dynamic-datasource.version>
         </#if>
         <lombok.version>1.18.24</lombok.version>
-        <digital-boot-starter.version>1.0.0.2025.07.23-SNAPSHOT</digital-boot-starter.version>
-        <infra-api-model.version>20250813.1-SNAPSHOT</infra-api-model.version>
         <feigin.version>3.1.9</feigin.version>
         <satoken.version>1.38.0</satoken.version>
         <spring-redis-starter.version>2.6.13</spring-redis-starter.version>
@@ -55,8 +56,8 @@
         <api-model.version>${r"${version}"}</api-model.version>
 
         <#if dbType?? && dbType == "mysql">
-            <mysql.version>8.0.28</mysql.version>
-            <druid.version>1.2.17</druid.version>
+        <mysql.version>8.0.28</mysql.version>
+        <druid.version>1.2.17</druid.version>
         </#if>
     </properties>
 
@@ -102,12 +103,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>${r"${commons-collections4.version}"}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.deepinnet</groupId>
-            <artifactId>digitaltwincommon</artifactId>
-            <version>${r"${digitaltwincommon.version}"}</version>
         </dependency>
     </dependencies>
 
@@ -231,37 +226,43 @@
             </dependency>
 
             <#if dbType?? && dbType != "">
-                <dependency>
-                    <groupId>com.baomidou</groupId>
-                    <artifactId>mybatis-plus-boot-starter</artifactId>
-                    <version>${r"${mybatis-plus.version}"}</version>
-                </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${r"${mybatis-plus.version}"}</version>
+            </dependency>
 
-                <dependency>
-                    <groupId>com.baomidou</groupId>
-                    <artifactId>mybatis-plus-generator</artifactId>
-                    <version>${r"${mybatis-plus.version}"}</version>
-                </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${r"${mybatis-plus.version}"}</version>
+            </dependency>
 
-                <dependency>
-                    <groupId>com.ibeetl</groupId>
-                    <artifactId>beetl</artifactId>
-                    <version>${r"${beetl.version}"}</version>
-                </dependency>
+            <dependency>
+                <groupId>com.ibeetl</groupId>
+                <artifactId>beetl</artifactId>
+                <version>${r"${beetl.version}"}</version>
+            </dependency>
             </#if>
 
             <#if dbType?? && dbType == "postgresql">
-                <dependency>
-                    <groupId>net.postgis</groupId>
-                    <artifactId>postgis-jdbc</artifactId>
-                    <version>${r"${postgis.version}"}</version>
-                </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${r"${dynamic-datasource.version}"}</version>
+            </dependency>
 
-                <dependency>
-                    <groupId>org.locationtech.jts</groupId>
-                    <artifactId>jts-core</artifactId>
-                    <version>${r"${jts.version}"}</version>
-                </dependency>
+            <dependency>
+                <groupId>net.postgis</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>${r"${postgis.version}"}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.locationtech.jts</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>${r"${jts.version}"}</version>
+            </dependency>
             </#if>
 
             <#if dbType?? && dbType == "mysql">

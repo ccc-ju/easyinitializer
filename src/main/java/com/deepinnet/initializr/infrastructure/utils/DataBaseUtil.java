@@ -189,8 +189,7 @@ public class DataBaseUtil {
             }
             return ArrayUtil.toArray(tableList, String.class);
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new InitializerException("0005", "数据库连接异常");
+            throw new InitializerException("0005", "数据库连接异常:" + e.getMessage(), e);
         } finally {
             try {
                 if (ObjectUtil.isNotNull(resultSet)) {

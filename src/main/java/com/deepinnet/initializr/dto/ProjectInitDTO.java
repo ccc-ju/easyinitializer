@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -45,7 +46,7 @@ public class ProjectInitDTO implements Serializable {
     /**
      * 项目类型（新增）
      */
-    private InitializerTypeEnum projectType = InitializerTypeEnum.DEEPINNET;
+    private InitializerTypeEnum projectType = InitializerTypeEnum.SIMPLE_PROJECT;
 
     /**
      * 数据库类型
@@ -81,5 +82,10 @@ public class ProjectInitDTO implements Serializable {
      * 是否启用Dubbo服务框架
      */
     private Boolean enableDubbo = Boolean.TRUE;
+
+    /**
+     * 用户选择的数据库表列表（用于生成代码）
+     */
+    private List<String> selectedTables;
 
 }

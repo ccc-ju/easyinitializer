@@ -44,11 +44,6 @@ public class GenerationSimpleService extends BaseModule {
             implDir.mkdirs();
         }
 
-        // 创建package-info.java
-        File packageInfoFile = new File(srcMainJavaDir, "package-info.java");
-        String packageName = projectInfo.getGroupId() + "." + projectInfo.getArtifactId().replaceAll("-", "") + ".service";
-        super.writeFile(packageInfoFile, "package-info.ftl", new ApplicationInfo(packageName));
-
         logger.info("创建普通项目service模块 {}", moduleDir.getPath());
     }
 }
