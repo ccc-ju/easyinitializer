@@ -36,7 +36,7 @@
         <postgresql.version>42.3.7</postgresql.version>
         </#if>
         <#if dbType?? && dbType != "">
-        <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        <mybatis-plus.version>3.5.3</mybatis-plus.version>
         </#if>
         <jedis.verision>3.6.3</jedis.verision>
         <#if enableDubbo>
