@@ -112,7 +112,7 @@
     </dependencies>
 
     <build>
-        <finalName>${artifactId}</finalName>
+        <finalName>${name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -120,7 +120,7 @@
                 <version>2.7.6</version>
                 <configuration>
 
-                    <mainClass>com.deepinnet.${artifactId}.${name}</mainClass>
+                    <mainClass>${groupId}.${name}</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
