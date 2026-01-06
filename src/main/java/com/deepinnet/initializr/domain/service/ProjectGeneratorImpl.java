@@ -140,6 +140,8 @@ public class ProjectGeneratorImpl implements IProjectGenerator {
         //启动类名称
         StringBuffer applicationJavaName = new StringBuffer("ApplicationStarter");
 
+        projectInfo.setApplicationClassName(applicationJavaName.toString());
+
         // 1. 生成 application.yml
         generationYml.doGeneration(projectInfo, projectsRoot);
 

@@ -38,6 +38,8 @@ public class ProjectInfo implements Serializable {
 
     private String password;
 
+    private String applicationClassName;
+
     /**
      * 是否启用nacos
      */

@@ -21,6 +21,10 @@ public class GenerationSimpleAppStarter extends BaseModule {
     private final Logger logger = LoggerFactory.getLogger(GenerationSimpleAppStarter.class);
 
     public void doGeneration(ProjectInfo projectInfo, String projectsRoot) throws Exception {
+        String applicationClassName = projectInfo.getName().replaceAll("-", "") + "Application";
+        applicationClassName = applicationClassName.substring(0, 1).toUpperCase() + applicationClassName.substring(1);
+        projectInfo.setApplicationClassName(applicationClassName);
+
         String moduleName = projectInfo.getName() + "-app-starter";
         File moduleDir = new File(projectsRoot, moduleName);
         if (!moduleDir.exists()) {
@@ -39,8 +43,6 @@ public class GenerationSimpleAppStarter extends BaseModule {
         }
 
         // 创建启动类
-        String applicationClassName = projectInfo.getName().replaceAll("-", "") + "Application";
-        applicationClassName = applicationClassName.substring(0, 1).toUpperCase() + applicationClassName.substring(1);
         File applicationFile = new File(srcMainJavaDir, applicationClassName + ".java");
         super.writeFile(applicationFile, "simple-application.ftl", projectInfo);
 

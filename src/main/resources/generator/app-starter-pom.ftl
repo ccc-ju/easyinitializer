@@ -120,7 +120,7 @@
                 <version>2.7.6</version>
                 <configuration>
 
-                    <mainClass>${groupId}.${name}</mainClass>
+                    <mainClass>${groupId}.${applicationClassName}</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

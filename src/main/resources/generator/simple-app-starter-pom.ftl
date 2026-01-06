@@ -95,7 +95,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${r"${spring-boot.version}"}</version>
                 <configuration>
-                    <mainClass>${groupId}.${artifactId?replace("-", "")}.Application</mainClass>
+                    <mainClass>${groupId}.${applicationClassName}</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
