@@ -120,7 +120,7 @@
                 <version>2.7.6</version>
                 <configuration>
 
-                    <mainClass>com.deepinnet.${artifactId}.ApplicationStarter</mainClass>
+                    <mainClass>com.deepinnet.${artifactId}.${name}</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
